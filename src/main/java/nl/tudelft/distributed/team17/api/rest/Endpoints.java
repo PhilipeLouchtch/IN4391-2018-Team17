@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.api.rest;
 
+import nl.tudelft.distributed.team17.Entity;
 import nl.tudelft.distributed.team17.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,13 @@ public class Endpoints
 	String message(@RequestBody String body)
 	{
 		return messageService.processMsg(body);
+	}
+
+	@PostMapping
+	@RequestMapping("/entity")
+	Entity modify(@RequestBody Entity entity)
+	{
+		return new Entity(entity.getData() + "##", entity.getName() + "@@");
 	}
 
 
