@@ -1,0 +1,44 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+plugins {
+	id 'org.springframework.boot' version '1.5.10.RELEASE'
+	id 'java'
+	id 'eclipse'
+}
+
+group = 'nl.tudelft.distributed.team17'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	compile 'com.github.PhilipeLouchtch:plouchtch-lib-java:fb50165'
+
+	compile 'org.springframework.boot:spring-boot-starter-web'
+	runtime 'org.springframework.boot:spring-boot-devtools'
+
+//	compile 'org.springframework.boot:spring-boot-starter-activemq'
+//	compile 'org.apache.activemq:activemq-broker'
+//	compile 'org.apache.activemq:activemq-kahadb-store'
+//
+//	compile 'org.springframework.integration:spring-integration-core'
+//	compile 'org.springframework.integration:spring-integration-java-dsl'
+//
+//	compile 'com.fasterxml.jackson.core:jackson-databind'
+//	compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.5'
+	distributionType = Wrapper.DistributionType.ALL
+}
