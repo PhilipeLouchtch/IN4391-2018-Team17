@@ -21,6 +21,17 @@ public abstract class PlayerCommand
         return clock;
     }
 
-    public abstract WorldState apply(WorldState worldState);
+    public PlayerCommand(Integer playerId, Integer clock)
+    {
+        this.playerId = playerId;
+        this.clock = clock;
+    }
+
+    // Jackson
+    protected PlayerCommand()
+    {
+    }
+
+    public abstract void apply(WorldState worldState) throws InvalidCommandException;
 
 }

@@ -1,7 +1,7 @@
 package nl.tudelft.distributed.team17.model.command;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import nl.tudelft.distributed.team17.model.BoardLocation;
+import nl.tudelft.distributed.team17.model.Location;
 import nl.tudelft.distributed.team17.model.WorldState;
 
 public class PlayerHealCommand extends PlayerCommand
@@ -13,13 +13,12 @@ public class PlayerHealCommand extends PlayerCommand
 	private Integer clock;
 
 	@JsonProperty("locationToHeal")
-	private BoardLocation locationToHeal;
+	private Location locationToHeal;
 
-	public PlayerHealCommand(Integer playerId, BoardLocation locationToHeal, Integer clock)
+	public PlayerHealCommand(Integer playerId, Location locationToHeal, Integer clock)
 	{
-		this.playerId = playerId;
+		super(playerId, clock);
 		this.locationToHeal = locationToHeal;
-		this.clock = clock;
 	}
 
 	// Jackson
@@ -27,14 +26,16 @@ public class PlayerHealCommand extends PlayerCommand
 	{
 	}
 
-	public BoardLocation getLocationToHeal()
+	public Location getLocationToHeal()
 	{
 		return locationToHeal;
 	}
 
 	@Override
-	public WorldState apply(WorldState worldState)
+	public void apply(WorldState worldState)
 	{
-		return null;
+
+		worldState.updateUnit()
+		return ;
 	}
 }

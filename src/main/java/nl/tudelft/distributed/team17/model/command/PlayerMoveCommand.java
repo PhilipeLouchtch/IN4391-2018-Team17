@@ -17,9 +17,8 @@ public class PlayerMoveCommand extends PlayerCommand
 
 	public PlayerMoveCommand(Unit.Direction direction, Integer playerId, Integer clock)
 	{
+		super(playerId, clock);
 		this.direction = direction;
-		this.playerId = playerId;
-		this.clock = clock;
 	}
 
 	// For Jackson
@@ -33,8 +32,8 @@ public class PlayerMoveCommand extends PlayerCommand
 	}
 
 	@Override
-	public WorldState apply(WorldState worldState)
+	public void apply(WorldState worldState)
 	{
-		return null;
+		worldState.movePlayer(playerId, direction);
 	}
 }

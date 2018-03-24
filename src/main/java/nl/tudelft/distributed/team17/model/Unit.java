@@ -10,8 +10,8 @@ public class Unit
 	@JsonProperty("id")
 	private Integer id;
 
-	@JsonProperty("boardLocation")
-	private BoardLocation boardLocation;
+	@JsonProperty("location")
+	private Location location;
 
 	@JsonProperty("unitHealth")
 	private UnitHealth unitHealth;
@@ -19,53 +19,39 @@ public class Unit
 	@JsonProperty("attackPower")
 	private Integer attackPower;
 
-	private Unit(UnitType unitType, Integer id, BoardLocation boardLocation, UnitHealth unitHealth, Integer attackPower)
+	private Unit(UnitType unitType, Integer id, Location location, UnitHealth unitHealth, Integer attackPower)
 	{
 		this.unitType = unitType;
 		this.id = id;
-		this.boardLocation = boardLocation;
+		this.location = location;
 		this.unitHealth = unitHealth;
 		this.attackPower = attackPower;
 	}
 
 	private static Unit unitWithModifiedHealth(Unit unit, UnitHealth newHealth)
 	{
-		return new Unit (unit.unitType, unit.id, unit.boardLocation, newHealth, unit.attackPower);
+		return new Unit(unit.unitType, unit.id, unit.location, newHealth, unit.attackPower);
 	}
 
-	static Unit constructPlayer(Integer playerId, BoardLocation boardLocation, UnitHealth unitHealth, Integer attackPower)
+	private static Unit unitMoved(Unit unit, Location location)
 	{
-		return new Unit(UnitType.PLAYER, playerId, boardLocation, unitHealth, attackPower);
+		return new Unit(unit.unitType, unit.id, location, unit.unitHealth, unit.attackPower);
 	}
 
-	static Unit constructDragon(Integer playerId, BoardLocation boardLocation, UnitHealth unitHealth, Integer attackPower)
+	static Unit constructPlayer(Integer playerId, Location location, UnitHealth unitHealth, Integer attackPower)
 	{
-		return new Unit(UnitType.DRAGON, playerId, boardLocation, unitHealth, attackPower);
+		return new Unit(UnitType.PLAYER, playerId, location, unitHealth, attackPower);
 	}
 
-	public UnitType getUnitType()
+	static Unit constructDragon(Integer playerId, Location location, UnitHealth unitHealth, Integer attackPower)
 	{
-		return unitType;
+		return new Unit(UnitType.DRAGON, playerId, location, unitHealth, attackPower);
 	}
 
-	public Integer getId()
+	public Unit moved(distributed.systems.das.units.Unit.Direction direction)
 	{
-		return id;
-	}
-
-	public BoardLocation getBoardLocation()
-	{
-		return boardLocation;
-	}
-
-	public UnitHealth getUnitHealth()
-	{
-		return unitHealth;
-	}
-
-	public Integer getAttackPower()
-	{
-		return attackPower;
+		Location newLocation = location.moved(direction);
+		return unitMoved(this, newLocation);
 	}
 
 	public Unit incurDamage(int damage)
@@ -83,5 +69,30 @@ public class Unit
 	public Unit attack(Unit unitUnderAttack)
 	{
 		return unitUnderAttack.incurDamage(this.attackPower);
+	}
+
+	public UnitType getUnitType()
+	{
+		return unitType;
+	}
+
+	public Integer getId()
+	{
+		return id;
+	}
+
+	public Location getLocation()
+	{
+		return location;
+	}
+
+	public UnitHealth getUnitHealth()
+	{
+		return unitHealth;
+	}
+
+	public Integer getAttackPower()
+	{
+		return attackPower;
 	}
 }
