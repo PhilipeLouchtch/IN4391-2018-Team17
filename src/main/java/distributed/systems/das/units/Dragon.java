@@ -1,8 +1,10 @@
 package distributed.systems.das.units;
 
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
+import distributed.systems.core.Message;
 import distributed.systems.das.BattleField;
 import distributed.systems.das.GameState;
 
@@ -117,8 +119,13 @@ public class Dragon extends Unit implements Runnable, Serializable {
 				e.printStackTrace();
 			}
 		}
-		clientSocket.unRegister();
 
+//		clientSocket.unRegister();
 	}
 
+	@Override
+	public Message onExceptionThrown(Message message, InetSocketAddress destinationAddress)
+	{
+		return null;
+	}
 }

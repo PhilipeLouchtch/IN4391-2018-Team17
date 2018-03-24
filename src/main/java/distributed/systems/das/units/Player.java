@@ -1,7 +1,9 @@
 package distributed.systems.das.units;
 
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 
+import distributed.systems.core.Message;
 import distributed.systems.das.BattleField;
 import distributed.systems.das.GameState;
 
@@ -138,7 +140,13 @@ public class Player extends Unit implements Runnable, Serializable {
 				e.printStackTrace();
 			}
 		}
-		clientSocket.unRegister();
+//		clientSocket.unRegister();
 	}
 
+	@Override
+	public Message onExceptionThrown(Message message, InetSocketAddress destinationAddress)
+	{
+		// make compilable
+		return null;
+	}
 }

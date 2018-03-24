@@ -1,5 +1,6 @@
 package distributed.systems.das;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 import distributed.systems.das.units.Dragon;
@@ -8,10 +9,6 @@ import distributed.systems.das.units.Unit;
 import distributed.systems.das.units.Unit.UnitType;
 import distributed.systems.core.IMessageReceivedHandler;
 import distributed.systems.core.Message;
-import distributed.systems.core.Socket;
-import distributed.systems.core.SynchronizedSocket;
-import distributed.systems.core.exception.IDNotAssignedException;
-import distributed.systems.example.LocalSocket;
 
 /**
  * The actual battlefield where the fighting takes place.
@@ -31,7 +28,7 @@ public class BattleField implements IMessageReceivedHandler {
 	private static BattleField battlefield;
 
 	/* Primary socket of the battlefield */ 
-	private Socket serverSocket;
+//	private Socket serverSocket;
 	
 	/* The last id that was assigned to an unit. This variable is used to
 	 * enforce that each unit has its own unique id.
@@ -49,13 +46,13 @@ public class BattleField implements IMessageReceivedHandler {
 	 * @param height of the battlefield
 	 */
 	private BattleField(int width, int height) {
-		Socket local = new LocalSocket();
+//		Socket local = new LocalSocket();
 		
 		synchronized (this) {
 			map = new Unit[width][height];
-			local.register(BattleField.serverID);
-			serverSocket = new SynchronizedSocket(local);
-			serverSocket.addMessageReceivedHandler(this);
+//			local.register(BattleField.serverID);
+//			serverSocket = new SynchronizedSocket(local);
+//			serverSocket.addMessageReceivedHandler(this);
 			units = new ArrayList<Unit>();
 		}
 		
@@ -192,7 +189,7 @@ public class BattleField implements IMessageReceivedHandler {
 		return ++lastUnitID;
 	}
 
-	public void onMessageReceived(Message msg) {
+	public Message onMessageReceived(Message msg) {
 		Message reply = null;
 		String origin = (String)msg.get("origin");
 		MessageRequest request = (MessageRequest)msg.get("request");
@@ -271,13 +268,20 @@ public class BattleField implements IMessageReceivedHandler {
 				return;
 		}
 
-		try {
-			if (reply != null)
-				serverSocket.sendMessage(reply, origin);
-		}
-		catch(IDNotAssignedException idnae)  {
-			// Could happen if the target already logged out
-		}
+//		try {
+//			//if (reply != null)
+//				//serverSocket.sendMessage(reply, origin);
+//		}
+//		catch(IDNotAssignedException idnae)  {
+//			// Could happen if the target already logged out
+//		}
+		return msg;
+	}
+
+	@Override
+	public Message onExceptionThrown(Message message, InetSocketAddress destinationAddress)
+	{
+		return null;
 	}
 
 	/**
@@ -292,7 +296,7 @@ public class BattleField implements IMessageReceivedHandler {
 			unit.stopRunnerThread();
 		}
 
-		serverSocket.unRegister();
+//		serverSocket.unRegister();
 	}
 	
 }
