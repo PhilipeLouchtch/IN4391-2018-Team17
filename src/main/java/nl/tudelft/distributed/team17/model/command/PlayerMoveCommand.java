@@ -2,8 +2,9 @@ package nl.tudelft.distributed.team17.model.command;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import distributed.systems.das.units.Unit;
+import nl.tudelft.distributed.team17.model.WorldState;
 
-public class PlayerMoveCommand
+public class PlayerMoveCommand extends PlayerCommand
 {
 	@JsonProperty("direction")
 	private Unit.Direction direction;
@@ -31,13 +32,9 @@ public class PlayerMoveCommand
 		return direction;
 	}
 
-	public Integer getPlayerId()
+	@Override
+	public WorldState apply(WorldState worldState)
 	{
-		return playerId;
-	}
-
-	public Integer getClock()
-	{
-		return clock;
+		return null;
 	}
 }

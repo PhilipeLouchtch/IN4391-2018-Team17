@@ -6,5 +6,4 @@ public class Ledger
 {
 	transient WorldState worldState;
 	private Ledger previous;
-
 }

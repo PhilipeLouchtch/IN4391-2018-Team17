@@ -2,8 +2,9 @@ package nl.tudelft.distributed.team17.model.command;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.BoardLocation;
+import nl.tudelft.distributed.team17.model.WorldState;
 
-public class PlayerAttackCommand
+public class PlayerAttackCommand extends PlayerCommand
 {
 	@JsonProperty("playerId")
 	private Integer playerId;
@@ -26,18 +27,14 @@ public class PlayerAttackCommand
 	{
 	}
 
-	public Integer getPlayerId()
-	{
-		return playerId;
-	}
-
 	public BoardLocation getBoardLocation()
 	{
 		return boardLocation;
 	}
 
-	public Integer getClock()
+	@Override
+	public WorldState apply(WorldState worldState)
 	{
-		return clock;
+		return null;
 	}
 }
