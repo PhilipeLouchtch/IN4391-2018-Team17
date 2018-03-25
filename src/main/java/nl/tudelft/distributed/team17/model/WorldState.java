@@ -1,7 +1,5 @@
 package nl.tudelft.distributed.team17.model;
 
-import nl.tudelft.distributed.team17.application.NoSuchUnitExistsException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

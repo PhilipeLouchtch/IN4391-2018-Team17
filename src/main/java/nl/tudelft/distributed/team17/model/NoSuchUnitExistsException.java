@@ -1,4 +1,4 @@
-package nl.tudelft.distributed.team17.application;
+package nl.tudelft.distributed.team17.model;
 
 public class NoSuchUnitExistsException extends RuntimeException
 {

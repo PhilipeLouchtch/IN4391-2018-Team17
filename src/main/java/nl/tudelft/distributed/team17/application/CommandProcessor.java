@@ -8,12 +8,10 @@ public class CommandProcessor
 {
 	// create a new buffer / ledger and any new commands need to lock on ledger
 
-	private CommandValidator commandValidator;
 	private CurrentWorldState currentWorldState;
 
-	public CommandProcessor(CommandValidator commandValidator, CurrentWorldState currentWorldState)
+	public CommandProcessor(CurrentWorldState currentWorldState)
 	{
-		this.commandValidator = commandValidator;
 		this.currentWorldState = currentWorldState;
 	}
 
