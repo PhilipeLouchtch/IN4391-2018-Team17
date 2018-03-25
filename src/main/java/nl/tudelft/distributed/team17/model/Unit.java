@@ -66,9 +66,9 @@ public class Unit
 		return unitWithModifiedHealth(this, newHealth);
 	}
 
-	public Unit attack(Unit unitUnderAttack)
+	public boolean isDead()
 	{
-		return unitUnderAttack.incurDamage(this.attackPower);
+		return getUnitHealth().isEmpty();
 	}
 
 	public UnitType getUnitType()

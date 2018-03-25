@@ -32,8 +32,8 @@ public class PlayerAttackCommand extends PlayerCommand
 	}
 
 	@Override
-	public WorldState apply(WorldState worldState)
+	public void apply(WorldState worldState)
 	{
-		return null;
+		worldState.damageUnit(playerId, location);
 	}
 }

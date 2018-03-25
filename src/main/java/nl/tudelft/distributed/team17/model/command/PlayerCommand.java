@@ -32,6 +32,6 @@ public abstract class PlayerCommand
     {
     }
 
-    public abstract void apply(WorldState worldState) throws InvalidCommandException;
+    public abstract void apply(WorldState worldState);
 
 }

@@ -29,8 +29,15 @@ public class WorldState
 
 	public Unit getPlayerUnitOrThrow(Integer playerId)
 	{
-		Unit unit = findUnit(playerId).orElseThrow(() -> new NoSuchUnitExistsException(playerId));
+		Unit unit = getUnitOrThrow(playerId);
 		assertUnitIsPlayer(unit);
+
+		return unit;
+	}
+
+	public Unit getUnitOrThrow(Integer unitId)
+	{
+		Unit unit = findUnit(unitId).orElseThrow(() -> new NoSuchUnitExistsException(unitId));
 
 		return unit;
 	}
@@ -38,9 +45,6 @@ public class WorldState
 	public synchronized void movePlayer(Integer playerId, distributed.systems.das.units.Unit.Direction direction)
 	{
 		Unit unit = getPlayerUnitOrThrow(playerId);
-
-		//TODO: ensure valid location
-
 		Unit movedUnit = unit.moved(direction);
 
 		swapUnits(unit, movedUnit);
@@ -62,10 +66,50 @@ public class WorldState
 		swapUnits(unitToHeal, healedUnit);
 	}
 
+	public synchronized void damageUnit(Integer attackerId, Location locationToAttack)
+	{
+		Unit attacker = getUnitOrThrow(attackerId);
+
+		int distance = attacker.getLocation().maxDistanceTo(locationToAttack);
+		if (distance > 2)
+		{
+			throw new AttackRangeException(attacker, locationToAttack, distance);
+		}
+
+		Unit unitToAttack = board.getAt(locationToAttack);
+		Unit attackedUnit = unitToAttack.incurDamage(attacker.getAttackPower());
+
+		if(attackedUnit.isDead())
+		{
+			removeUnitFromBoard(unitToAttack, attackedUnit);
+		}
+		else
+		{
+			swapUnits(unitToAttack, attackedUnit);
+		}
+	}
+
 	private synchronized void swapUnits(Unit oldUnit, Unit newUnit)
 	{
+		assertSameUnitId(oldUnit, newUnit);
 		board.swapUnits(oldUnit, newUnit);
 		units.replace(newUnit.getId(), newUnit);
+	}
+
+	private synchronized void removeUnitFromBoard(Unit oldUnit, Unit newUnit)
+	{
+		assertSameUnitId(oldUnit, newUnit);
+		board.removeUnit(oldUnit);
+		units.replace(newUnit.getId(), newUnit);
+	}
+
+	private static void assertSameUnitId(Unit unitOne, Unit unitTwo)
+	{
+		if(unitOne.getId().equals(unitTwo.getId()))
+		{
+			String message = String.format("Unit ids do not match, was: [%s] and [%s]", unitOne.getId(), unitTwo.getId());
+			throw new IllegalArgumentException(message);
+		}
 	}
 
 	private static void assertUnitIsPlayer(Unit unit)

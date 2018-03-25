@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.application;
 
+import nl.tudelft.distributed.team17.model.command.InvalidCommandException;
 import nl.tudelft.distributed.team17.model.command.PlayerCommand;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class CommandProcessor
 		{
 			currentWorldState.applyToConsideredWorldState(playerCommand::apply);
 		}
-		catch (Exception ex)
+		catch (InvalidCommandException ex)
 		{
 			return false;
 		}

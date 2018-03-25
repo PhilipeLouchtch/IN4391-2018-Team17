@@ -36,4 +36,9 @@ public class UnitHealth
 		int newHealth = Math.min(current + heal, maximum);
 		return new UnitHealth(newHealth, maximum);
 	}
+
+	boolean isEmpty()
+	{
+		return current == 0;
+	}
 }

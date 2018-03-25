@@ -34,8 +34,6 @@ public class PlayerHealCommand extends PlayerCommand
 	@Override
 	public void apply(WorldState worldState)
 	{
-
-		worldState.updateUnit()
-		return ;
+		worldState.healPlayer(playerId, locationToHeal);
 	}
 }
