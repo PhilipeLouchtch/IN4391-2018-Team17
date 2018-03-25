@@ -6,7 +6,7 @@ import nl.tudelft.distributed.team17.model.WorldState;
 public abstract class Command
 {
     @JsonProperty("playerId")
-    private Integer playerId;
+    private String playerId;
 
     @JsonProperty("clock")
     private Integer clock;
@@ -14,7 +14,7 @@ public abstract class Command
     @JsonProperty("isPriority")
     private boolean isPriority;
 
-    public Integer getPlayerId()
+    public String getPlayerId()
     {
         return playerId;
     }
@@ -29,7 +29,7 @@ public abstract class Command
         return isPriority;
     }
 
-    public Command(Integer playerId, Integer clock, boolean isPriority)
+    public Command(String playerId, Integer clock, boolean isPriority)
     {
         this.playerId = playerId;
         this.clock = clock;

@@ -9,7 +9,7 @@
 
     e) At some point (max(time, ledgerSize)) the server propagates a ledger to peer servers, they agree on an ordering, server creates new state and sends the state to the client
 
-        i) If there is a conflict on a spawn location of the player and the player isn't spawned the steps from c) are repeated until it can be spawned
+        i) If there is a conflict on a spawn locationToAttack of the player and the player isn't spawned the steps from c) are repeated until it can be spawned
         ii) If at this point the server dies, other servers know about its clients and will detect the client that requested to join. One of them (based on the hash maybe, so there is no extra consensus required between servers) will take a role of the original, dead server and replay to server (or start from c))
 
     f) Client receives the state and is free to take an action

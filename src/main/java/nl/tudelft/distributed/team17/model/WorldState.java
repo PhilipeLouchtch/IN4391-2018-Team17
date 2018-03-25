@@ -1,6 +1,7 @@
 package nl.tudelft.distributed.team17.model;
 
 import java.util.List;
+import java.util.Random;
 
 public class WorldState
 {
@@ -18,7 +19,7 @@ public class WorldState
 		this.units = units;
 	}
 
-	public synchronized void movePlayer(Integer playerId, distributed.systems.das.units.Unit.Direction direction)
+	public synchronized void movePlayer(String playerId, distributed.systems.das.units.Unit.Direction direction)
 	{
 		Unit unit = units.getPlayerUnitOrThrow(playerId);
 		Unit movedUnit = unit.moved(direction);
@@ -26,7 +27,7 @@ public class WorldState
 		swapUnits(unit, movedUnit);
 	}
 
-	public synchronized void healPlayer(Integer playerId, Location locationToHeal)
+	public synchronized void healPlayer(String playerId, Location locationToHeal)
 	{
 		Unit unit = units.getPlayerUnitOrThrow(playerId);
 
@@ -42,7 +43,7 @@ public class WorldState
 		swapUnits(unitToHeal, healedUnit);
 	}
 
-	public synchronized void damageUnit(Integer attackerId, Location locationToAttack)
+	public synchronized void damageUnit(String attackerId, Location locationToAttack)
 	{
 		Unit attacker = units.getUnitOrThrow(attackerId);
 		int distance = attacker.getLocation().maxDistanceTo(locationToAttack);
@@ -68,6 +69,15 @@ public class WorldState
 		{
 			swapUnits(unitToAttack, attackedUnit);
 		}
+	}
+
+	public synchronized Unit spawnUnit(String unitId, UnitType unitType)
+	{
+		Random random = new Random(unitId.hashCode());
+		Unit spawnedUnit = Unit.constructRandomUnit(random, unitId, unitType);
+		spawnedUnit = board.placeUnitOnRandomEmptyLocation(random, spawnedUnit);
+		units.addUnit(spawnedUnit);
+		return spawnedUnit;
 	}
 
 	public List<Unit> playersInRangeOfUnit(Unit unit, int range)

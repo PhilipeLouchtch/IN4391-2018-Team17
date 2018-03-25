@@ -6,19 +6,21 @@ import nl.tudelft.distributed.team17.model.WorldState;
 
 public class PlayerAttackCommand extends Command
 {
-	@JsonProperty("playerId")
-	private Integer playerId;
+	@JsonProperty("locationToAttack")
+	private Location locationToAttack;
 
-	@JsonProperty("location")
-	private Location location;
-
-	@JsonProperty("clock")
-	private Integer clock;
-
-	public PlayerAttackCommand(Integer playerId, Location location, Integer clock)
+	static public PlayerAttackCommand createWithEmailAuthentication(
+			String emailAddress,
+			Integer clock,
+			Location locationToAttack)
 	{
-		super(playerId, clock, false);
-		this.location = location;
+		return new PlayerAttackCommand(emailAddress, clock, locationToAttack);
+	}
+
+	private PlayerAttackCommand(String emailAddress, Integer clock, Location locationToAttack)
+	{
+		super(emailAddress, clock, false);
+		this.locationToAttack = locationToAttack;
 	}
 
 	// Jackson
@@ -26,14 +28,14 @@ public class PlayerAttackCommand extends Command
 	{
 	}
 
-	public Location getLocation()
+	public Location getLocationToAttack()
 	{
-		return location;
+		return locationToAttack;
 	}
 
 	@Override
 	public void apply(WorldState worldState)
 	{
-		worldState.damageUnit(playerId, location);
+		worldState.damageUnit(getPlayerId(), locationToAttack);
 	}
 }

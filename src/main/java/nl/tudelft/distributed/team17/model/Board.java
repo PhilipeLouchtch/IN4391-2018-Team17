@@ -1,5 +1,7 @@
 package nl.tudelft.distributed.team17.model;
 
+import java.util.Random;
+
 public class Board
 {
 	static final int BOARD_SIZE = 25;
@@ -57,6 +59,31 @@ public class Board
 		placeUnit(newUnit);
 	}
 
+	public Unit getAt(Location location)
+	{
+		assertIsValid(location);
+
+		return fields[location.getX()][location.getY()];
+	}
+
+	public synchronized Unit placeUnitOnRandomEmptyLocation(Random random, Unit unit )
+	{
+		int x;
+		int y;
+		Location location;
+
+		do
+		{
+			x = random.nextInt(BOARD_SIZE);
+			y = random.nextInt(BOARD_SIZE);
+			location = new Location(x, y);
+		} while(!isLocationOccupied(location));
+
+		Unit placedUnit = unit.placed(location);
+		setAt(location, unit);
+		return placedUnit;
+	}
+
 	private void assertNotOccupied(Location newLocation)
 	{
 		if (isLocationOccupied(newLocation))
@@ -71,13 +98,6 @@ public class Board
 		{
 			throw new InvalidLocationException(newLocation);
 		}
-	}
-
-	Unit getAt(Location location)
-	{
-		assertIsValid(location);
-
-		return fields[location.getX()][location.getY()];
 	}
 
 	private void setAt(Location location, Unit unit)

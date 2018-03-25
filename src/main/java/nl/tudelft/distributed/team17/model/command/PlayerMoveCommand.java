@@ -9,15 +9,17 @@ public class PlayerMoveCommand extends Command
 	@JsonProperty("direction")
 	private Unit.Direction direction;
 
-	@JsonProperty("playerId")
-	private Integer playerId;
-
-	@JsonProperty("clock")
-	private Integer clock;
-
-	public PlayerMoveCommand(Unit.Direction direction, Integer playerId, Integer clock)
+	static public PlayerMoveCommand createWithEmailAuthentication(
+			String emailAddress,
+			Integer clock,
+			Unit.Direction direction)
 	{
-		super(playerId, clock, false);
+		return new PlayerMoveCommand(emailAddress, clock, direction);
+	}
+
+	public PlayerMoveCommand(String emailAddress, Integer clock, Unit.Direction direction)
+	{
+		super(emailAddress, clock, false);
 		this.direction = direction;
 	}
 
@@ -34,6 +36,6 @@ public class PlayerMoveCommand extends Command
 	@Override
 	public void apply(WorldState worldState)
 	{
-		worldState.movePlayer(playerId, direction);
+		worldState.movePlayer(getPlayerId(), direction);
 	}
 }
