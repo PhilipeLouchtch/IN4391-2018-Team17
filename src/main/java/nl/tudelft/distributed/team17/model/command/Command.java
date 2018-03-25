@@ -3,13 +3,16 @@ package nl.tudelft.distributed.team17.model.command;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.WorldState;
 
-public abstract class PlayerCommand
+public abstract class Command
 {
     @JsonProperty("playerId")
     private Integer playerId;
 
     @JsonProperty("clock")
     private Integer clock;
+
+    @JsonProperty("isPriority")
+    private boolean isPriority;
 
     public Integer getPlayerId()
     {
@@ -21,17 +24,22 @@ public abstract class PlayerCommand
         return clock;
     }
 
-    public PlayerCommand(Integer playerId, Integer clock)
+    public boolean isPriority()
+    {
+        return isPriority;
+    }
+
+    public Command(Integer playerId, Integer clock, boolean isPriority)
     {
         this.playerId = playerId;
         this.clock = clock;
+        this.isPriority = isPriority;
     }
 
     // Jackson
-    protected PlayerCommand()
+    protected Command()
     {
     }
 
     public abstract void apply(WorldState worldState);
-
 }

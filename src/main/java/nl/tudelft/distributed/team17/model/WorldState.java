@@ -1,6 +1,5 @@
 package nl.tudelft.distributed.team17.model;
 
-import java.util.Collection;
 import java.util.List;
 
 public class WorldState

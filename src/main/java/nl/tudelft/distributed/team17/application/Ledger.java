@@ -1,7 +1,7 @@
 package nl.tudelft.distributed.team17.application;
 
 import nl.tudelft.distributed.team17.model.WorldState;
-import nl.tudelft.distributed.team17.model.command.PlayerCommand;
+import nl.tudelft.distributed.team17.model.command.Command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class Ledger
 	private WorldState worldState;
 
 	// These are the "transactions" of the ledger
-	private List<PlayerCommand> commands;
+	private List<Command> commands;
 
 	public Ledger()
 	{

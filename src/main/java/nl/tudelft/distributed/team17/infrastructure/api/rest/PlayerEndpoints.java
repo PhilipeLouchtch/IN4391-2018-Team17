@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.infrastructure.api.rest;
 
+import nl.tudelft.distributed.team17.model.Unit;
 import nl.tudelft.distributed.team17.model.command.PlayerAttackCommand;
 import nl.tudelft.distributed.team17.model.command.PlayerHealCommand;
 import nl.tudelft.distributed.team17.model.command.PlayerMoveCommand;
@@ -8,8 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping(path = "player")
@@ -50,5 +49,11 @@ public class PlayerEndpoints
 
 		// return the new world state
 		return null;
+	}
+
+	@PostMapping(path = "spawn")
+	public Unit spawn()
+	{
+
 	}
 }

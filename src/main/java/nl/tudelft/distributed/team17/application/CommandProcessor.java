@@ -1,6 +1,6 @@
 package nl.tudelft.distributed.team17.application;
 
-import nl.tudelft.distributed.team17.model.command.PlayerCommand;
+import nl.tudelft.distributed.team17.model.command.Command;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,14 +19,14 @@ public class CommandProcessor
 
 	/**
 	 * Applies the given command to the consideredWorldState
-	 * @param playerCommand The command to apply
+	 * @param command The command to apply
 	 * @return boolean indicating if the command was successfully applied to the consideredWorldState, false otherwise
 	 */
-	public boolean applyCommand(PlayerCommand playerCommand)
+	public boolean applyCommand(Command command)
 	{
 		try
 		{
-			currentWorldState.applyToConsideredWorldState(playerCommand::apply);
+			currentWorldState.applyToConsideredWorldState(command::apply);
 		}
 		catch (Exception ex)
 		{
