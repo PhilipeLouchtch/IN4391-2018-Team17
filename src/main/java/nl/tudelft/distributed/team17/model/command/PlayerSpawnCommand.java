@@ -25,6 +25,7 @@ public class PlayerSpawnCommand extends PlayerCommand
     @Override
     public void apply(WorldState worldState)
     {
+        assertUnitAlive(worldState);
         worldState.spawnUnit(getPlayerId(), UnitType.PLAYER);
     }
 }

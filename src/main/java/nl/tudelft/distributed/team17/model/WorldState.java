@@ -19,6 +19,12 @@ public class WorldState
 		this.units = units;
 	}
 
+	public synchronized boolean isUnitDead(String unitId)
+	{
+		Unit unit = units.getUnitOrThrow(unitId);
+		return unit.isDead();
+	}
+
 	public synchronized void movePlayer(String playerId, distributed.systems.das.units.Unit.Direction direction)
 	{
 		Unit unit = units.getPlayerUnitOrThrow(playerId);

@@ -36,6 +36,7 @@ public class PlayerHealCommand extends PlayerCommand
 	@Override
 	public void apply(WorldState worldState)
 	{
+		assertUnitAlive(worldState);
 		worldState.healPlayer(getPlayerId(), getLocationToHeal());
 	}
 }

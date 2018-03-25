@@ -36,6 +36,7 @@ public class PlayerMoveCommand extends PlayerCommand
 	@Override
 	public void apply(WorldState worldState)
 	{
+		assertUnitAlive(worldState);
 		worldState.movePlayer(getPlayerId(), getDirection());
 	}
 }

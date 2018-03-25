@@ -33,6 +33,7 @@ public class DragonAttackCommand extends DragonCommand
     @Override
     public void apply(WorldState worldState)
     {
+        assertUnitAlive(worldState);
         worldState.damageUnit(getDragon(), getPlayerToAttack());
     }
 

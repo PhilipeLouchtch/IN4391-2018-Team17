@@ -36,6 +36,7 @@ public class PlayerAttackCommand extends PlayerCommand
 	@Override
 	public void apply(WorldState worldState)
 	{
+		assertUnitAlive(worldState);
 		worldState.damageUnit(getPlayerId(), getLocationToAttack());
 	}
 }
