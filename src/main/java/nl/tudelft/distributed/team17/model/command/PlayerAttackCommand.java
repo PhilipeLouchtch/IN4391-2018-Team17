@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.Location;
 import nl.tudelft.distributed.team17.model.WorldState;
 
-public class PlayerAttackCommand extends Command
+public class PlayerAttackCommand extends PlayerCommand
 {
 	@JsonProperty("locationToAttack")
 	private Location locationToAttack;
@@ -36,6 +36,6 @@ public class PlayerAttackCommand extends Command
 	@Override
 	public void apply(WorldState worldState)
 	{
-		worldState.damageUnit(getPlayerId(), locationToAttack);
+		worldState.damageUnit(getPlayerId(), getLocationToAttack());
 	}
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.Location;
 import nl.tudelft.distributed.team17.model.WorldState;
 
-public class PlayerHealCommand extends Command
+public class PlayerHealCommand extends PlayerCommand
 {
 	@JsonProperty("locationToHeal")
 	private Location locationToHeal;
@@ -36,6 +36,6 @@ public class PlayerHealCommand extends Command
 	@Override
 	public void apply(WorldState worldState)
 	{
-		worldState.healPlayer(getPlayerId(), locationToHeal);
+		worldState.healPlayer(getPlayerId(), getLocationToHeal());
 	}
 }

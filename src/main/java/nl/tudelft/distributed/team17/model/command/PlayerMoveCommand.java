@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import distributed.systems.das.units.Unit;
 import nl.tudelft.distributed.team17.model.WorldState;
 
-public class PlayerMoveCommand extends Command
+public class PlayerMoveCommand extends PlayerCommand
 {
 	@JsonProperty("direction")
 	private Unit.Direction direction;
@@ -36,6 +36,6 @@ public class PlayerMoveCommand extends Command
 	@Override
 	public void apply(WorldState worldState)
 	{
-		worldState.movePlayer(getPlayerId(), direction);
+		worldState.movePlayer(getPlayerId(), getDirection());
 	}
 }

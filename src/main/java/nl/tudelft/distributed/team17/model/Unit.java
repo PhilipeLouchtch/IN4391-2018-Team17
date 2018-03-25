@@ -6,15 +6,15 @@ import java.util.Random;
 
 public class Unit
 {
-	static final int DRAGON_LOWER_AP_BOUND = 5;
-	static final int DRAGON_UPPER_AP_BOUND = 20;
-	static final int DRAGON_LOWER_HEALTH_BOUND = 50;
-	static final int DRAGON_UPPER_HEALTH_BOUND = 100;
+	static private final int DRAGON_LOWER_AP_BOUND = 5;
+	static private final int DRAGON_UPPER_AP_BOUND = 20;
+	static private final int DRAGON_LOWER_HEALTH_BOUND = 50;
+	static private final int DRAGON_UPPER_HEALTH_BOUND = 100;
 
-	static final int PLAYER_LOWER_AP_BOUND = 1;
-	static final int PLAYER_UPPER_AP_BOUND = 10;
-	static final int PLAYER_LOWER_HEALTH_BOUND = 10	;
-	static final int PLAYER_UPPER_HEALTH_BOUND = 20;
+	static private final int PLAYER_LOWER_AP_BOUND = 1;
+	static private final int PLAYER_UPPER_AP_BOUND = 10;
+	static private final int PLAYER_LOWER_HEALTH_BOUND = 10	;
+	static private final int PLAYER_UPPER_HEALTH_BOUND = 20;
 
 	@JsonProperty("unitType")
 	private UnitType unitType;

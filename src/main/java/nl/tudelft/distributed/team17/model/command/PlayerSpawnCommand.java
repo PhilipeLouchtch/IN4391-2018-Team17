@@ -3,7 +3,7 @@ package nl.tudelft.distributed.team17.model.command;
 import nl.tudelft.distributed.team17.model.UnitType;
 import nl.tudelft.distributed.team17.model.WorldState;
 
-public class PlayerSpawnCommand extends Command
+public class PlayerSpawnCommand extends PlayerCommand
 {
     static public PlayerSpawnCommand createWithEmailAuthentication(
         String emailAddress,
