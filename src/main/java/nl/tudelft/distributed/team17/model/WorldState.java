@@ -1,48 +1,27 @@
 package nl.tudelft.distributed.team17.model;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Collection;
+import java.util.List;
 
 public class WorldState
 {
 	private Board board;
-	private Map<Integer, Unit> units;
+	private UnitsInWorld units;
 
 	public static WorldState initial()
 	{
-		return new WorldState(Board.initial(), new HashMap<>());
+		return new WorldState(Board.initial(), UnitsInWorld.initial());
 	}
 
-	public WorldState(Board board, Map<Integer, Unit> units)
+	public WorldState(Board board, UnitsInWorld units)
 	{
 		this.board = board;
 		this.units = units;
 	}
 
-	public Optional<Unit> findUnit(Integer unitId)
-	{
-		return Optional.of(units.get(unitId));
-	}
-
-	public Unit getPlayerUnitOrThrow(Integer playerId)
-	{
-		Unit unit = getUnitOrThrow(playerId);
-		assertUnitIsPlayer(unit);
-
-		return unit;
-	}
-
-	public Unit getUnitOrThrow(Integer unitId)
-	{
-		Unit unit = findUnit(unitId).orElseThrow(() -> new NoSuchUnitExistsException(unitId));
-
-		return unit;
-	}
-
 	public synchronized void movePlayer(Integer playerId, distributed.systems.das.units.Unit.Direction direction)
 	{
-		Unit unit = getPlayerUnitOrThrow(playerId);
+		Unit unit = units.getPlayerUnitOrThrow(playerId);
 		Unit movedUnit = unit.moved(direction);
 
 		swapUnits(unit, movedUnit);
@@ -50,7 +29,7 @@ public class WorldState
 
 	public synchronized void healPlayer(Integer playerId, Location locationToHeal)
 	{
-		Unit unit = getPlayerUnitOrThrow(playerId);
+		Unit unit = units.getPlayerUnitOrThrow(playerId);
 
 		int distance = unit.getLocation().maxDistanceTo(locationToHeal);
 		if (distance > 5)
@@ -66,8 +45,7 @@ public class WorldState
 
 	public synchronized void damageUnit(Integer attackerId, Location locationToAttack)
 	{
-		Unit attacker = getUnitOrThrow(attackerId);
-
+		Unit attacker = units.getUnitOrThrow(attackerId);
 		int distance = attacker.getLocation().maxDistanceTo(locationToAttack);
 		if (distance > 2)
 		{
@@ -75,6 +53,12 @@ public class WorldState
 		}
 
 		Unit unitToAttack = board.getAt(locationToAttack);
+
+		damageUnit(attacker, unitToAttack);
+	}
+
+	public synchronized void damageUnit(Unit attacker, Unit unitToAttack)
+	{
 		Unit attackedUnit = unitToAttack.incurDamage(attacker.getAttackPower());
 
 		if(attackedUnit.isDead())
@@ -87,18 +71,23 @@ public class WorldState
 		}
 	}
 
+	public List<Unit> playersInRangeOfUnit(Unit unit, int range)
+	{
+		return units.playersInRangeOfUnit(unit, range);
+	}
+
 	private synchronized void swapUnits(Unit oldUnit, Unit newUnit)
 	{
 		assertSameUnitId(oldUnit, newUnit);
 		board.swapUnits(oldUnit, newUnit);
-		units.replace(newUnit.getId(), newUnit);
+		units.update(newUnit);
 	}
 
 	private synchronized void removeUnitFromBoard(Unit oldUnit, Unit newUnit)
 	{
 		assertSameUnitId(oldUnit, newUnit);
 		board.removeUnit(oldUnit);
-		units.replace(newUnit.getId(), newUnit);
+		units.update(newUnit);
 	}
 
 	private static void assertSameUnitId(Unit unitOne, Unit unitTwo)
@@ -110,11 +99,4 @@ public class WorldState
 		}
 	}
 
-	private static void assertUnitIsPlayer(Unit unit)
-	{
-		if (unit.getUnitType() != UnitType.PLAYER)
-		{
-			throw new RuntimeException("Unit is not a player");
-		}
-	}
 }

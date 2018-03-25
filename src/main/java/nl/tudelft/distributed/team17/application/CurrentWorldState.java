@@ -16,20 +16,24 @@ public class CurrentWorldState
 	private WorldState currentWorldState;
 	private WorldState consideredWorldState;
 
+	private Ledger ledger;
+
 	@Autowired
 	public CurrentWorldState()
 	{
-		this(WorldState.initial());
-	}
-
-	public CurrentWorldState(WorldState currentWorldState)
-	{
-		this.currentWorldState = currentWorldState;
+		this.currentWorldState = WorldState.initial();
 		this.consideredWorldState = currentWorldState;
+		this.ledger = Ledger.genesis();
 	}
 
-	public synchronized void applyToConsideredWorldState(Consumer<WorldState> fn)
+	public synchronized void applyToConsideredWorldState(Consumer<WorldState> fn, Callback callback)
 	{
+		// if ledger is being published then must wait on new accepted state before applying command,
+		// all other callers will be blocked anyway as one caller is waiting inside
+
 		fn.accept(consideredWorldState);
+
+		// Command is accepted, need to exit method to allow other to do the same
+		// Use callback to return the accepted state once the command has been published
 	}
 }

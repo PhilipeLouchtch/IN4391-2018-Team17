@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 @RestController
 @RequestMapping(path = "player")
 public class PlayerEndpoints
@@ -21,9 +23,15 @@ public class PlayerEndpoints
 		// this to prevent recursion
 
 		// push command to game / ledger (blocking op)
+		WorldState worldState = null;
+		Object callback = (state) -> worldState = state;
+
+		// Send the command (if accepted) to other servers
+
+		//spin/sleep until worldstate is set
 
 		// return the new world state
-		return null;
+		return worldState;
 	}
 
 	@PostMapping(path = "heal")
