@@ -28,9 +28,8 @@ public class CurrentWorldState
 		this.consideredWorldState = currentWorldState;
 	}
 
-	public synchronized void applyToConsideredWorldState(Function<WorldState, WorldState> fn)
+	public synchronized void applyToConsideredWorldState(Consumer<WorldState> fn)
 	{
-		WorldState nextWorldState = fn.apply(consideredWorldState);
-		this.consideredWorldState = nextWorldState;
+		fn.accept(consideredWorldState);
 	}
 }
