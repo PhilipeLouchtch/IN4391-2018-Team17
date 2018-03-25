@@ -3,20 +3,26 @@ package nl.tudelft.distributed.team17.ai;
 import nl.tudelft.distributed.team17.model.Unit;
 import nl.tudelft.distributed.team17.model.UnitType;
 import nl.tudelft.distributed.team17.model.WorldState;
+import nl.tudelft.distributed.team17.model.command.DragonAttackCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+/**
+    Usage in Ledger:
+        - reseed(hashOfPreviousLedger)
+        - doesDragonPerformAction() -> no do nothing
+        - generateDragonAttackCommand(currentLedgerClock, consideredWorldState, dragonUnit) -> and add it to the ledger
+**/
 @Component
 public class DragonAi
 {
     private static final int CHANCE_TO_DO_ACTION = 10; // 1 in 10
     private Random random;
 
-    public DragonAi(Random random)
+    private DragonAi(Random random)
     {
         this.random = random;
     }
@@ -32,22 +38,20 @@ public class DragonAi
         random.setSeed(seed);
     }
 
-    public void applyDragonAction(WorldState worldState, Unit unit)
+    public boolean doesDragonPerformAction()
+    {
+        return chance(CHANCE_TO_DO_ACTION);
+    }
+
+    public DragonAttackCommand generateDragonAttackCommand(Integer clock, WorldState worldState, Unit unit)
     {
         assertUnitIsDragon(unit);
 
-        if(chance(CHANCE_TO_DO_ACTION))
-        {
-            dragonDoSomeAction(worldState, unit);
-        }
-    }
-
-    private void dragonDoSomeAction(WorldState worldState, Unit dragon)
-    {
-        List<Unit> attackablePlayers = worldState.playersInRangeOfUnit(dragon, 2);
+        List<Unit> attackablePlayers = worldState.playersInRangeOfUnit(unit, 2);
         Unit unitToAttack = pickRandomUnitFrom(attackablePlayers);
-
-        worldState.damageUnit(dragon, unitToAttack);
+        DragonAttackCommand dragonAttackCommand =
+                DragonAttackCommand.createDragonAttackCommand(unit, clock, unitToAttack);
+        return dragonAttackCommand;
     }
 
     private Unit pickRandomUnitFrom(List<Unit> units)

@@ -7,6 +7,8 @@ public class Location
 	private int x;
 	private int y;
 
+	static public final Location INVALID_LOCATION = null;
+
 	public Location(int x, int y)
 	{
 		this.x = x;

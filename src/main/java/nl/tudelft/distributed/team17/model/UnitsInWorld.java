@@ -1,17 +1,14 @@
 package nl.tudelft.distributed.team17.model;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class UnitsInWorld
 {
-    private Map<Integer, Unit> units;
+    private Map<String, Unit> units;
 
-    public UnitsInWorld(Map<Integer, Unit> units)
+    private UnitsInWorld(Map<String, Unit> units)
     {
         this.units = units;
     }
@@ -21,19 +18,24 @@ public class UnitsInWorld
         return new UnitsInWorld(new HashMap<>());
     }
 
-    public Optional<Unit> findUnit(Integer unitId)
+    public Optional<Unit> findUnit(String unitId)
     {
         return Optional.of(units.get(unitId));
     }
 
-    public Unit getUnitOrThrow(Integer unitId)
+    public Unit getUnitOrThrow(String unitId)
     {
         Unit unit = findUnit(unitId).orElseThrow(() -> new NoSuchUnitExistsException(unitId));
 
         return unit;
     }
 
-    public Unit getPlayerUnitOrThrow(Integer playerId)
+    public void addUnit(Unit unit)
+    {
+        units.put(unit.getId(), unit);
+    }
+
+    public Unit getPlayerUnitOrThrow(String playerId)
     {
         Unit unit = getUnitOrThrow(playerId);
         assertUnitIsPlayer(unit);
@@ -43,7 +45,7 @@ public class UnitsInWorld
 
     public void update(Unit unit)
     {
-        units.replace(unit.getId(), unit;
+        units.replace(unit.getId(), unit);
     }
 
     public List<Unit> playersInRangeOfUnit(Unit unit, int range)

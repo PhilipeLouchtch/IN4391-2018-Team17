@@ -4,20 +4,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.Location;
 import nl.tudelft.distributed.team17.model.WorldState;
 
-public class PlayerHealCommand extends Command
+public class PlayerHealCommand extends PlayerCommand
 {
-	@JsonProperty("playerId")
-	private Integer playerId;
-
-	@JsonProperty("clock")
-	private Integer clock;
-
 	@JsonProperty("locationToHeal")
 	private Location locationToHeal;
 
-	public PlayerHealCommand(Integer playerId, Location locationToHeal, Integer clock)
+	static public PlayerHealCommand createWithEmailAuthentication(
+			String emailAddress,
+			Integer clock,
+			Location locationToHeal)
 	{
-		super(playerId, clock, false);
+		return new PlayerHealCommand(emailAddress, clock, locationToHeal);
+	}
+
+	private PlayerHealCommand(String emailAddress, Integer clock, Location locationToHeal)
+	{
+		super(emailAddress, clock, false);
 		this.locationToHeal = locationToHeal;
 	}
 
@@ -34,6 +36,7 @@ public class PlayerHealCommand extends Command
 	@Override
 	public void apply(WorldState worldState)
 	{
-		worldState.healPlayer(playerId, locationToHeal);
+		assertUnitAlive(worldState);
+		worldState.healPlayer(getPlayerId(), getLocationToHeal());
 	}
 }

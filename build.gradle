@@ -25,6 +25,8 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-web'
 	runtime 'org.springframework.boot:spring-boot-devtools'
 
+	compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
+
 //	compile 'org.springframework.boot:spring-boot-starter-activemq'
 //	compile 'org.apache.activemq:activemq-broker'
 //	compile 'org.apache.activemq:activemq-kahadb-store'

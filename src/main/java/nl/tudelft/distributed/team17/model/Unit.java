@@ -2,13 +2,25 @@ package nl.tudelft.distributed.team17.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Random;
+
 public class Unit
 {
+	static private final int DRAGON_LOWER_AP_BOUND = 5;
+	static private final int DRAGON_UPPER_AP_BOUND = 20;
+	static private final int DRAGON_LOWER_HEALTH_BOUND = 50;
+	static private final int DRAGON_UPPER_HEALTH_BOUND = 100;
+
+	static private final int PLAYER_LOWER_AP_BOUND = 1;
+	static private final int PLAYER_UPPER_AP_BOUND = 10;
+	static private final int PLAYER_LOWER_HEALTH_BOUND = 10	;
+	static private final int PLAYER_UPPER_HEALTH_BOUND = 20;
+
 	@JsonProperty("unitType")
 	private UnitType unitType;
 
 	@JsonProperty("id")
-	private Integer id;
+	private String id;
 
 	@JsonProperty("location")
 	private Location location;
@@ -19,7 +31,7 @@ public class Unit
 	@JsonProperty("attackPower")
 	private Integer attackPower;
 
-	private Unit(UnitType unitType, Integer id, Location location, UnitHealth unitHealth, Integer attackPower)
+	private Unit(UnitType unitType, String id, Location location, UnitHealth unitHealth, Integer attackPower)
 	{
 		this.unitType = unitType;
 		this.id = id;
@@ -38,14 +50,43 @@ public class Unit
 		return new Unit(unit.unitType, unit.id, location, unit.unitHealth, unit.attackPower);
 	}
 
-	static Unit constructPlayer(Integer playerId, Location location, UnitHealth unitHealth, Integer attackPower)
+	static public Unit constructRandomUnit(Random random, String unitId, UnitType unitType)
 	{
-		return new Unit(UnitType.PLAYER, playerId, location, unitHealth, attackPower);
+		switch(unitType)
+		{
+			case DRAGON:
+				return constructRandomDragon(random, unitId);
+			case PLAYER:
+				return constructRandomPlayer(random, unitId);
+			default:
+				throw new IllegalArgumentException(String.format("UnitType: [%s] is not supported", unitType));
+		}
 	}
 
-	static Unit constructDragon(Integer playerId, Location location, UnitHealth unitHealth, Integer attackPower)
+	static private Unit constructRandomPlayer(Random random, String playerId)
 	{
-		return new Unit(UnitType.DRAGON, playerId, location, unitHealth, attackPower);
+		return constructRandomUnit(random, playerId, UnitType.PLAYER,
+				PLAYER_LOWER_AP_BOUND, PLAYER_UPPER_AP_BOUND, PLAYER_LOWER_HEALTH_BOUND, PLAYER_UPPER_HEALTH_BOUND);
+	}
+
+	static private Unit constructRandomDragon(Random random, String dragonId)
+	{
+		return constructRandomUnit(random, dragonId, UnitType.DRAGON,
+				DRAGON_LOWER_AP_BOUND, DRAGON_UPPER_AP_BOUND, DRAGON_LOWER_HEALTH_BOUND, DRAGON_UPPER_HEALTH_BOUND);
+	}
+
+	static private Unit constructRandomUnit(Random random, String unitId, UnitType unitType,
+											int lowerApBound, int upperApBound, int lowerHealthBound, int upperHealthBound)
+	{
+		int ap = getRandomValueBetween(random, lowerApBound, upperApBound);
+		int health = getRandomValueBetween(random, lowerHealthBound, upperHealthBound);
+		UnitHealth unitHealth = new UnitHealth(health, health);
+		return new Unit(unitType, unitId, Location.INVALID_LOCATION, unitHealth, ap);
+	}
+
+	private static int getRandomValueBetween(Random random, int lowerBound, int upperBound)
+	{
+		return random.nextInt(upperBound - lowerBound + 1) + lowerBound;
 	}
 
 	public Unit moved(distributed.systems.das.units.Unit.Direction direction)
@@ -66,6 +107,11 @@ public class Unit
 		return unitWithModifiedHealth(this, newHealth);
 	}
 
+	public Unit placed(Location location)
+	{
+		return unitMoved(this, location);
+	}
+
 	public boolean isDead()
 	{
 		return getUnitHealth().isEmpty();
@@ -76,7 +122,7 @@ public class Unit
 		return unitType;
 	}
 
-	public Integer getId()
+	public String getId()
 	{
 		return id;
 	}
