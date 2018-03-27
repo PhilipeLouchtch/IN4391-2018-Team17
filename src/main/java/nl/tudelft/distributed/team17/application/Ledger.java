@@ -52,6 +52,13 @@ public class Ledger
 		return new Ledger(NO_PREVIOUS, worldState, generation, false, noCommandsAcceptedSoFar, roll);
 	}
 
+	public static Ledger makeFloating(int generation, int commandsAcceptedSoFar, int tieBreaker)
+	{
+		final boolean IS_CLOSED = true;
+		final WorldState NO_WORLDSTATE = null;
+		return new Ledger(NO_PREVIOUS, NO_WORLDSTATE, generation, IS_CLOSED, commandsAcceptedSoFar, tieBreaker);
+	}
+
 	public synchronized Ledger makeNewHead()
 	{
 		final int roll = random.nextInt();

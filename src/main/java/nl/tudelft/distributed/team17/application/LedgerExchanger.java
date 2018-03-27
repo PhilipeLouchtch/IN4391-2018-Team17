@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.application;
 
+import nl.tudelft.distributed.team17.infrastructure.InterServerCommunication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,16 +13,15 @@ public class LedgerExchanger implements Runnable
 	private static final long LEDGER_OPEN_PERIOD_MS = 500;
 	private static final long LEDGER_STATUS_CHECK_PERIOD_MS = 10;
 
-	private KnownServerList knownServerList;
-	private RestTemplate restTemplate;
-
 	private CurrentWorldState currentWorldState;
+	private InterServerCommunication interServerCommunication;
 
 	private Instant ledgerOpenedAtInstant;
 
 
-	public LedgerExchanger(CurrentWorldState currentWorldState)
+	public LedgerExchanger(InterServerCommunication interServerCommunication, CurrentWorldState currentWorldState)
 	{
+		this.interServerCommunication = interServerCommunication;
 		this.currentWorldState = currentWorldState;
 	}
 
@@ -49,6 +49,7 @@ public class LedgerExchanger implements Runnable
 			currentWorldState.runInCriticalSection((ledger) ->
 			{
 				ledger.setClosed();
+				interServerCommunication.exchangeLedger(ledger, );
 				// now exchange ledgers between machines
 			});
 		}
