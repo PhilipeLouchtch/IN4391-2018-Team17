@@ -2,7 +2,7 @@ package nl.tudelft.distributed.team17.infrastructure;
 
 import nl.tudelft.distributed.team17.application.KnownServerList;
 import nl.tudelft.distributed.team17.application.Ledger;
-import nl.tudelft.distributed.team17.infrastructure.dto.LedgerDto;
+import nl.tudelft.distributed.team17.application.LedgerConsensus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -17,15 +17,17 @@ public class InterServerCommunication
 {
 	private RestTemplate restTemplate;
 	private KnownServerList knownServerList;
+	private LedgerConsensus ledgerConsensus;
 
 	@Autowired
-	public InterServerCommunication(RestTemplate restTemplate, KnownServerList knownServerList)
+	public InterServerCommunication(RestTemplate restTemplate, KnownServerList knownServerList, LedgerConsensus ledgerConsensus)
 	{
 		this.restTemplate = restTemplate;
 		this.knownServerList = knownServerList;
+		this.ledgerConsensus = ledgerConsensus;
 	}
 
-	private Object ledgerExchangeLock = new Object();
+	private final Object ledgerExchangeLock = new Object();
 	public void exchangeLedger(Ledger ledger, Consumer<List<Ledger>> receivedLedgers)
 	{
 		synchronized (ledgerExchangeLock)
@@ -46,10 +48,5 @@ public class InterServerCommunication
 //				}
 			});
 		}
-	}
-
-	private Ledger runConsensus(List<Ledger> ledgers)
-	{
-
 	}
 }
