@@ -45,7 +45,8 @@ public class CurrentWorldState
 
 	public synchronized void runInCriticalSection(CurrentWorldStateCriticalSection criticalSectionCode)
 	{
-		criticalSectionCode.runInCriticalSectionOfCurrentWorldState(currentLedger);
+		Ledger agreedUponLedger = criticalSectionCode.runInCriticalSectionOfCurrentWorldState(currentLedger);
+		switchToNewAcceptedLedger(agreedUponLedger);
 	}
 
 	private synchronized void applyPriorityCommands()
