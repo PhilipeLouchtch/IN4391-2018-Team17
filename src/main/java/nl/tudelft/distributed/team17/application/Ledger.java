@@ -35,6 +35,7 @@ public class Ledger
 		this.worldState = worldState;
 		this.previous = previous;
 		this.isClosed = isClosed;
+		this.generation = generation;
 		this.commandsAcceptedSoFar = commandsAcceptedSoFar;
 		this.tieBreaker = tieBreaker;
 
@@ -74,7 +75,7 @@ public class Ledger
 		final int roll = random.nextInt();
 		final int commandsAcceptedSoFar = this.commandsAcceptedSoFar;
 		final int generation = this.generation + 1;
-		
+
 		// Clone WorldState, so we always have an old, not changed copy
 		Cloner cloner = new Cloner();
 		WorldState copiedWorldState = cloner.deepClone(this.worldState);
