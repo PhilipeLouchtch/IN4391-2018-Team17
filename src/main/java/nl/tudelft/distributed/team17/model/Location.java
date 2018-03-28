@@ -1,8 +1,11 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.rits.cloning.Immutable;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Immutable
 public class Location
 {
 	private int x;

@@ -1,18 +1,24 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
 public class WorldState
 {
+	@JsonProperty("boards")
 	private Board board;
+	@JsonProperty("units")
 	private UnitsInWorld units;
+	@JsonProperty("worldStateClock")
 	private Integer worldStateClock;
 
 	public static WorldState initial()
 	{
-		return new WorldState(Board.initial(), UnitsInWorld.initial(), 0);
+		final int INITIAL_WORLDSTATE_CLOCK = 0;
+		return new WorldState(Board.initial(), UnitsInWorld.initial(), INITIAL_WORLDSTATE_CLOCK);
 	}
 
 	public WorldState(Board board, UnitsInWorld units, Integer worldStateClock)

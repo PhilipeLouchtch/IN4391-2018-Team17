@@ -1,11 +1,14 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class UnitsInWorld
 {
+    @JsonProperty("units")
     private Map<String, Unit> units;
 
     private UnitsInWorld(Map<String, Unit> units)

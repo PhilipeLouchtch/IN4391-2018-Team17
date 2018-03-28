@@ -1,9 +1,11 @@
 package nl.tudelft.distributed.team17.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rits.cloning.Immutable;
 
 import java.util.Random;
 
+@Immutable
 public class Unit
 {
 	static private final int DRAGON_LOWER_AP_BOUND = 5;
@@ -69,13 +71,13 @@ public class Unit
 				PLAYER_LOWER_AP_BOUND, PLAYER_UPPER_AP_BOUND, PLAYER_LOWER_HEALTH_BOUND, PLAYER_UPPER_HEALTH_BOUND);
 	}
 
-	static private Unit constructRandomDragon(Random random, String dragonId)
+	private static Unit constructRandomDragon(Random random, String dragonId)
 	{
 		return constructRandomUnit(random, dragonId, UnitType.DRAGON,
 				DRAGON_LOWER_AP_BOUND, DRAGON_UPPER_AP_BOUND, DRAGON_LOWER_HEALTH_BOUND, DRAGON_UPPER_HEALTH_BOUND);
 	}
 
-	static private Unit constructRandomUnit(Random random, String unitId, UnitType unitType,
+	private static Unit constructRandomUnit(Random random, String unitId, UnitType unitType,
 											int lowerApBound, int upperApBound, int lowerHealthBound, int upperHealthBound)
 	{
 		int ap = getRandomValueBetween(random, lowerApBound, upperApBound);
