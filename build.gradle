@@ -42,7 +42,7 @@ dependencies {
 
 	compile group: 'commons-codec', name: 'commons-codec', version: '1.11'
 	compile 'uk.com.robust-it:cloning:1.9.9'
-
+	compile 'com.logentries:logentries-appender:1.1.38'
 
 //	compile 'org.springframework.boot:spring-boot-starter-activemq'
 //	compile 'org.apache.activemq:activemq-broker'

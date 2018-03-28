@@ -5,6 +5,8 @@ import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.HealCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.MoveCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.SpawnCommandDTO;
 import nl.tudelft.distributed.team17.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ClientBot implements Runnable
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClientBot.class);
+
     private RestTemplate restTemplate;
 
     private String serverAddress;
@@ -29,6 +33,7 @@ public class ClientBot implements Runnable
         this.serverAddress = serverAddress;
         this.clientId = clientId;
         this.restTemplate = new RestTemplate();
+        LOGGER.info(String.format("[%s]: started", clientId));
     }
 
     @Override
@@ -36,7 +41,6 @@ public class ClientBot implements Runnable
     {
         this.clientUnit = spawn();
         updateWorldState();
-
         while(!clientUnit.isDead())
         {
             try
@@ -49,13 +53,13 @@ public class ClientBot implements Runnable
             }
             if(!currentWorldState.anyDragonsLeft())
             {
-                System.out.println(String.format("%s, %s: all dragons dead, win", clientId, currentWorldState.getWorldStateClock()));
+                LOGGER.info(String.format("[%s, %s]: all dragons are dead, players win", clientId, currentWorldState.getWorldStateClock()));
                 return;
             }
             performAction();
             updateWorldState();
         }
-        System.out.println(String.format("%s, %s: died", clientId, currentWorldState.getWorldStateClock()));
+        LOGGER.info(String.format("[%s, %s]: player died", clientId, currentWorldState.getWorldStateClock()));
     }
 
     private void performAction()
@@ -76,6 +80,7 @@ public class ClientBot implements Runnable
         // if there are no dragons then end
         if(!closestDragon.isPresent())
         {
+            LOGGER.error(String.format("[%s, %s]: Did not find any dragon, should not happen", clientId, currentWorldState.getWorldStateClock()));
             throw new RuntimeException("Did not find any dragon, should not happen");
         }
         Unit closestDragonValue = closestDragon.get();
@@ -95,10 +100,10 @@ public class ClientBot implements Runnable
 
     private void performAttackDragonAction(Unit dragon)
     {
-        System.out.println(String.format("%s, %s: Attacking closest dragon %s", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
+        LOGGER.info(String.format("[%s, %s]: Attacking closest dragon [%s]", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
         AttackCommandDTO attackCommandDTO = new AttackCommandDTO(clientId, currentWorldState.getWorldStateClock(), dragon.getLocation());
         makeRequest("attack", attackCommandDTO);
-        System.out.println(String.format("%s, %s: Attacked closest dragon %s", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
+        LOGGER.info(String.format("[%s, %s]: Attacked closest dragon [%s]", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
     }
 
     private void performMoveTowardsDragonAction(Unit dragon)
@@ -111,39 +116,39 @@ public class ClientBot implements Runnable
             Location movedClient = clientLocation.moved(direction);
             if(!currentWorldState.locationOccupied(movedClient))
             {
-                System.out.println(String.format("%s, %s: Moving towards closest dragon %s, direction %s", clientId, currentWorldState.getWorldStateClock(), dragon.getId(), direction));
+                LOGGER.info(String.format("[%s, %s]: Moving towards closest dragon [%s], direction [%s]", clientId, currentWorldState.getWorldStateClock(), dragon.getId(), direction));
                 MoveCommandDTO moveCommandDTO = new MoveCommandDTO(clientId, currentWorldState.getWorldStateClock(), direction);
                 makeRequest("move", moveCommandDTO);
                 return;
             }
         }
-        System.out.println(String.format("%s, %s: Can't move towards closest dragon %s. Paths blocked", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
+        LOGGER.info(String.format(String.format("[%s, %s]: Can't move towards closest dragon [%s], paths are blocked", clientId, currentWorldState.getWorldStateClock(), dragon.getId())));
     }
 
     private void performHealPlayerAction(Unit player)
     {
-        System.out.println(String.format("%s, %s: Healing %s", clientId, currentWorldState.getWorldStateClock(), player.getId()));
+        LOGGER.info(String.format("[%s, %s]: Healing player [%s]", clientId, currentWorldState.getWorldStateClock(), player.getId()));
         HealCommandDTO healCommandDTO =
                 new HealCommandDTO(clientId, currentWorldState.getWorldStateClock(), player.getLocation());
         makeRequest("heal", healCommandDTO);
-        System.out.println(String.format("%s, %s: Healed %s", clientId, currentWorldState.getWorldStateClock(), player.getId()));
+        LOGGER.info(String.format("[%s, %s]: Healed player [%s]", clientId, currentWorldState.getWorldStateClock(), player.getId()));
     }
 
     private Unit spawn()
     {
-        System.out.println(String.format("%s: requesting spawning", clientId));
+        LOGGER.info(String.format("[%s]: requesting spawning", clientId));
         SpawnCommandDTO spawnCommandDTO = new SpawnCommandDTO(clientId);
         Unit unit = makeRequest(spawnCommandDTO, "spawn", Unit.class);
         Location location = unit.getLocation();
-        System.out.println(String.format("%s: spawned on (%i,%i)", clientId, location.getX(), location.getY()));
+        LOGGER.info(String.format(("[%s]: spawned on (%i,%i)"), clientId, location.getX(), location.getY()));
         return unit;
     }
 
     public void updateWorldState()
     {
-        System.out.println(String.format("%s, %s: Requesting worldState", clientId, currentWorldState.getWorldStateClock()));
+        LOGGER.info(String.format("[%s, %s]: Requesting new worldState", clientId, currentWorldState.getWorldStateClock()));
         WorldState worldState = makeRequest("worldstate", WorldState.class);
-        System.out.println(String.format("%s, %s: Got worldState %s", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
+        LOGGER.info(String.format("[%s, %s]: Got worldState [%s]", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
         this.clientUnit = worldState.getPlayerUnit(clientId);
         this.currentWorldState = worldState;
     }
