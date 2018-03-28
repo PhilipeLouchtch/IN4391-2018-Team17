@@ -36,7 +36,9 @@ public class PlayerHealCommand extends PlayerCommand
 	@Override
 	public void apply(WorldState worldState)
 	{
+		LOGGER.info(String.format("Player [%s] tries to heal unit at location (%d,%d)", getPlayerId(), locationToHeal.getX(), locationToHeal.getY()));
 		assertUnitAlive(worldState);
 		worldState.healPlayer(getPlayerId(), getLocationToHeal());
+		LOGGER.info(String.format("Player [%s] successfully healed unit at location (%d,%d)", getPlayerId(), locationToHeal.getX(), locationToHeal.getY()));
 	}
 }

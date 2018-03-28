@@ -36,7 +36,9 @@ public class PlayerAttackCommand extends PlayerCommand
 	@Override
 	public void apply(WorldState worldState)
 	{
+		LOGGER.info(String.format("Player [%s] tries to attack unit at location (%d,%d)", getPlayerId(), locationToAttack.getX(), locationToAttack.getY()));
 		assertUnitAlive(worldState);
 		worldState.damageUnit(getPlayerId(), getLocationToAttack());
+		LOGGER.info(String.format("Player [%s] successfully attacked unit at location (%d,%d)", getPlayerId(), locationToAttack.getX(), locationToAttack.getY()));
 	}
 }

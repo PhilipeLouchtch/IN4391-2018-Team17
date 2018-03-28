@@ -64,7 +64,6 @@ public class PlayerEndpoints
 	@PostMapping(path = "worldstate")
 	public WorldState worldState()
 	{
-
 		return null;
 	}
 }

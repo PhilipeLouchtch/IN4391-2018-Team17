@@ -36,7 +36,9 @@ public class PlayerMoveCommand extends PlayerCommand
 	@Override
 	public void apply(WorldState worldState)
 	{
+		LOGGER.info(String.format("Player [%s] tries to move in direction %s", getPlayerId(), getDirection()));
 		assertUnitAlive(worldState);
 		worldState.movePlayer(getPlayerId(), getDirection());
+		LOGGER.info(String.format("Player [%s] successfully moved in direction %s", getPlayerId(), getDirection()));
 	}
 }
