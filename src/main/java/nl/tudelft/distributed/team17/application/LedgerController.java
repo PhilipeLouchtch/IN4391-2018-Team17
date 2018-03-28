@@ -16,14 +16,16 @@ public class LedgerController implements Runnable
 	private CurrentWorldState currentWorldState;
 	private InterServerCommunication interServerCommunication;
 	private LedgerConsensus ledgerConsensus;
+	private LedgerExchangeRoundManager ledgerExchangeRoundManager;
 
 	private Instant ledgerOpenedAtInstant;
 
-	public LedgerController(InterServerCommunication interServerCommunication, CurrentWorldState currentWorldState, LedgerConsensus ledgerConsensus)
+	public LedgerController(InterServerCommunication interServerCommunication, CurrentWorldState currentWorldState, LedgerConsensus ledgerConsensus, LedgerExchangeRoundManager ledgerExchangeRoundManager)
 	{
 		this.interServerCommunication = interServerCommunication;
 		this.currentWorldState = currentWorldState;
 		this.ledgerConsensus = ledgerConsensus;
+		this.ledgerExchangeRoundManager = ledgerExchangeRoundManager;
 	}
 
 	@Override
@@ -44,21 +46,36 @@ public class LedgerController implements Runnable
 
 	private void handleLedgerOpenTimeoutIfOccurred()
 	{
-		long msBetweenOpenAndNow = ChronoUnit.MILLIS.between(ledgerOpenedAtInstant, Instant.now());
+		long msBetweenOpenAndNow = getMsBetweenOpenAndNow();
 		if (msBetweenOpenAndNow >= LEDGER_OPEN_PERIOD_MS)
 		{
 			// handling ledger open timeout
-			currentWorldState.runInCriticalSection((ourLedger) ->
-			{
-				ourLedger.setClosed();
-
-				List<Ledger> ledgers = interServerCommunication.exchangeLedger(ourLedger);
-				Ledger agreedLedger = ledgerConsensus.runConsensus(ledgers, ourLedger.getGeneration());
-
-				ledgerOpenedAtInstant = Instant.now();
-
-				return agreedLedger;
-			});
+			doLedgerExchange();
 		}
+	}
+
+	private long getMsBetweenOpenAndNow()
+	{
+		return ChronoUnit.MILLIS.between(ledgerOpenedAtInstant, Instant.now());
+	}
+
+	private void doLedgerExchange()
+	{
+		currentWorldState.runInCriticalSection((ourLedger) ->
+		{
+			ourLedger.setClosed();
+
+			List<Ledger> ledgers = interServerCommunication.exchangeLedger(ourLedger);
+
+			// adding our own ledger to the list of received
+			ledgers.add(ourLedger);
+
+			Ledger agreedLedger = ledgerConsensus.runConsensus(ledgers, ourLedger.getGeneration());
+
+			return agreedLedger;
+		});
+
+		// A new ledger has been opened, so set the new open time
+		ledgerOpenedAtInstant = Instant.now();
 	}
 }

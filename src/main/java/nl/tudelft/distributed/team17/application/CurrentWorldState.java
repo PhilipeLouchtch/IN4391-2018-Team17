@@ -49,7 +49,7 @@ public class CurrentWorldState
 		switchToNewAcceptedLedger(agreedUponLedger);
 	}
 
-	private synchronized void applyPriorityCommands()
+	private void applyPriorityCommands()
 	{
 		priorityCommandsQueue.forEach(currentLedger::applyCommand);
 		priorityCommandsQueue.clear();
