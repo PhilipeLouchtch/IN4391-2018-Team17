@@ -49,8 +49,8 @@ public class DragonAi
 
         List<Unit> attackablePlayers = worldState.playersInRangeOfUnit(unit, 2);
         Unit unitToAttack = pickRandomUnitFrom(attackablePlayers);
-        DragonAttackCommand dragonAttackCommand =
-                DragonAttackCommand.createDragonAttackCommand(unit, clock, unitToAttack);
+        DragonAttackCommand dragonAttackCommand = DragonAttackCommand.createDragonAttackCommand(unit, clock, unitToAttack);
+
         return dragonAttackCommand;
     }
 

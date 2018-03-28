@@ -56,9 +56,9 @@ public class PlayerEndpoints
 	public WorldState attack(@RequestBody AttackCommandDTO attackCommandDTO)
 	{
 		PlayerAttackCommand playerAttackCommand = PlayerAttackCommand.createWithEmailAuthentication(
-													attackCommandDTO.getEmailAddress(),
-													attackCommandDTO.getClock(),
-													attackCommandDTO.getLocationToAttack());
+				attackCommandDTO.getEmailAddress(),
+				attackCommandDTO.getClock(),
+				attackCommandDTO.getLocationToAttack());
 		// push command to game
 
 		// return the new world state
