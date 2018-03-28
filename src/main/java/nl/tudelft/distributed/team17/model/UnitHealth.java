@@ -1,7 +1,9 @@
 package nl.tudelft.distributed.team17.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rits.cloning.Immutable;
 
+@Immutable
 public class UnitHealth
 {
 	@JsonProperty("current")
@@ -25,20 +27,25 @@ public class UnitHealth
 	{
 	}
 
-	UnitHealth damaged(int damage)
+	public UnitHealth damaged(int damage)
 	{
 		int newHealth = Math.max(current - damage, 0);
 		return new UnitHealth(newHealth, maximum);
 	}
 
-	UnitHealth healed(int heal)
+	public UnitHealth healed(int heal)
 	{
 		int newHealth = Math.min(current + heal, maximum);
 		return new UnitHealth(newHealth, maximum);
 	}
 
-	boolean isEmpty()
+	public boolean isEmpty()
 	{
 		return current == 0;
+	}
+
+	public boolean halfHealthOrLess()
+	{
+		return current/maximum <= 1/2;
 	}
 }

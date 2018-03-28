@@ -265,7 +265,7 @@ public class BattleField implements IMessageReceivedHandler {
 				break;
 			case removeUnit:
 				this.removeUnit((Integer)msg.get("x"), (Integer)msg.get("y"));
-				return;
+				return reply;
 		}
 
 //		try {
@@ -275,7 +275,7 @@ public class BattleField implements IMessageReceivedHandler {
 //		catch(IDNotAssignedException idnae)  {
 //			// Could happen if the target already logged out
 //		}
-		return msg;
+		return reply;
 	}
 
 	@Override

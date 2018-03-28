@@ -3,9 +3,13 @@ package nl.tudelft.distributed.team17.model.command;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.UnitDeadException;
 import nl.tudelft.distributed.team17.model.WorldState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class Command
 {
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Command.class);
+
     @JsonProperty("playerId")
     private String playerId;
 
@@ -46,6 +50,7 @@ public abstract class Command
     {
         if(worldState.isUnitDead(getPlayerId()))
         {
+            LOGGER.info(String.format("Player [%s] is dead, no interactions possible", getPlayerId()));
             throw new UnitDeadException(getPlayerId());
         }
     }

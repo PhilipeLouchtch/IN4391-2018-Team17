@@ -25,7 +25,8 @@ public class PlayerSpawnCommand extends PlayerCommand
     @Override
     public void apply(WorldState worldState)
     {
-        assertUnitAlive(worldState);
+        LOGGER.info(String.format("Player [%s] requests spawning", getPlayerId()));
         worldState.spawnUnit(getPlayerId(), UnitType.PLAYER);
+        LOGGER.info(String.format("Player [%s] successfully spawned", getPlayerId()));
     }
 }

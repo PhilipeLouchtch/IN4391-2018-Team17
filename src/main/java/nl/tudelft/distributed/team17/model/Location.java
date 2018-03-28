@@ -1,7 +1,11 @@
 package nl.tudelft.distributed.team17.model;
 
-import distributed.systems.das.units.Unit;
+import com.rits.cloning.Immutable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Immutable
 public class Location
 {
 	private int x;
@@ -25,7 +29,7 @@ public class Location
 		return y;
 	}
 
-	public Location moved(Unit.Direction direction)
+	public Location moved(Direction direction)
 	{
 		int x = this.x, y = this.y;
 
@@ -57,6 +61,30 @@ public class Location
 	public int maxDistanceTo(Location other)
 	{
 		return Math.abs(this.x - other.getX()) + Math.abs(this.y - other.getY());
+	}
+
+	public List<Direction> getMoveDirectionsTowards(Location targetLocation)
+	{
+		List<Direction> moveDirections = new ArrayList<>();
+		Integer deltaX = getX() - targetLocation.getX();
+		Integer deltaY = getY() - targetLocation.getY();
+		if(deltaX > 0)
+		{
+			moveDirections.add(Direction.down);
+		}
+		else if(deltaX < 0)
+		{
+			moveDirections.add(Direction.up);
+		}
+		if(deltaY > 0)
+		{
+			moveDirections.add(Direction.left);
+		}
+		else if(deltaY < 0)
+		{
+			moveDirections.add(Direction.right);
+		}
+		return moveDirections;
 	}
 
 	@Override

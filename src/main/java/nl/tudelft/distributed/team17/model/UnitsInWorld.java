@@ -1,11 +1,14 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class UnitsInWorld
 {
+    @JsonProperty("units")
     private Map<String, Unit> units;
 
     private UnitsInWorld(Map<String, Unit> units)
@@ -69,7 +72,23 @@ public class UnitsInWorld
                 .collect(Collectors.toList());
     }
 
-    static private void assertValidRange(int range)
+    public boolean anyDragonLeft()
+    {
+        return units.values().stream()
+                .filter(t -> t.getUnitType() == UnitType.DRAGON).count() != 0;
+    }
+
+    public Optional<Unit> closestDragonTo(Unit unit)
+    {
+        Location unitLocation = unit.getLocation();
+        LocationDistanceComparator comparator = new LocationDistanceComparator(unitLocation);
+
+        return units.values().stream()
+                .filter(t -> t.getUnitType() == UnitType.DRAGON)
+                .min(comparator);
+    }
+
+    private static void assertValidRange(int range)
     {
         if (range <= 0)
         {

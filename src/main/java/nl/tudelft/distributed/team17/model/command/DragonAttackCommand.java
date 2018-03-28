@@ -6,6 +6,7 @@ import nl.tudelft.distributed.team17.model.WorldState;
 
 public class DragonAttackCommand extends DragonCommand
 {
+
     @JsonProperty("playerToAttack")
     private Unit playerToAttack;
 
@@ -33,8 +34,10 @@ public class DragonAttackCommand extends DragonCommand
     @Override
     public void apply(WorldState worldState)
     {
+        LOGGER.info(String.format("Dragon [%s] tries attacking player [%s]", getPlayerId(), playerToAttack.getId()));
         assertUnitAlive(worldState);
         worldState.damageUnit(getDragon(), getPlayerToAttack());
+        LOGGER.info(String.format("Dragon [%s] successfully attacked player [%s]", getPlayerId(), playerToAttack.getId()));
     }
 
 
