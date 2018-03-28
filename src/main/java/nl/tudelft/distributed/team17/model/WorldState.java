@@ -129,6 +129,12 @@ public class WorldState
 		return player;
 	}
 
+	public boolean playerUnitInGame(String playerId)
+	{
+		Optional<Unit> player = units.findUnit(playerId);
+		return player.isPresent();
+	}
+
 	public Integer getWorldStateClock()
 	{
 		return worldStateClock;

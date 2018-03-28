@@ -39,27 +39,45 @@ public class ClientBot implements Runnable
     @Override
     public void run()
     {
-        this.clientUnit = spawn();
-        updateWorldState();
+        // get worldstate, if it does not contain player unit (so it is out first entry to the game) create it
+        if(!updateWorldState())
+        {
+            // request spawning player unit
+            this.clientUnit = spawn();
+            // get worldstates until it contains client unit so we can take actions
+            while(!updateWorldState())
+            {
+                sleep(1000);
+            }
+        }
+        // otherwise enter action loop
         while(!clientUnit.isDead())
         {
-            try
-            {
-                TimeUnit.SECONDS.sleep(1);
-            }
-            catch(InterruptedException e)
-            {
-                continue;
-            }
+            sleep(1000);
             if(!currentWorldState.anyDragonsLeft())
             {
                 LOGGER.info(String.format("[%s, %s]: all dragons are dead, players win", clientId, currentWorldState.getWorldStateClock()));
                 return;
             }
             performAction();
-            updateWorldState();
+            if(!updateWorldState())
+            {
+                LOGGER.info(String.format("[%s, %s]: worldState did not contain player unit, should not happen", clientId, currentWorldState.getWorldStateClock()));
+                throw new RuntimeException("Worldstate did not contain player unit. should not happen");
+            }
         }
         LOGGER.info(String.format("[%s, %s]: player died", clientId, currentWorldState.getWorldStateClock()));
+    }
+
+    private void sleep(int miliseconds)
+    {
+        try
+        {
+            TimeUnit.MILLISECONDS.sleep(miliseconds);
+        }
+        catch(InterruptedException e)
+        {
+        }
     }
 
     private void performAction()
@@ -144,13 +162,19 @@ public class ClientBot implements Runnable
         return unit;
     }
 
-    public void updateWorldState()
+    // Returns true if client unit found in the returned worldState, false if not found in the returned worldState
+    public boolean updateWorldState()
     {
         LOGGER.info(String.format("[%s, %s]: Requesting new worldState", clientId, currentWorldState.getWorldStateClock()));
         WorldState worldState = makeRequest("worldstate", WorldState.class);
         LOGGER.info(String.format("[%s, %s]: Got worldState [%s]", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
-        this.clientUnit = worldState.getPlayerUnit(clientId);
         this.currentWorldState = worldState;
+        if(worldState.playerUnitInGame(clientId))
+        {
+            this.clientUnit = worldState.getPlayerUnit(clientId);
+            return true;
+        }
+        return false;
     }
 
     private String createUrl(String endPointUrl)
