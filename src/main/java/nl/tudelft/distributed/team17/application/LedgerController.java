@@ -45,7 +45,7 @@ public class LedgerController implements Runnable
 	private void handleLedgerOpenTimeoutIfOccurred()
 	{
 		long msBetweenOpenAndNow = ChronoUnit.MILLIS.between(ledgerOpenedAtInstant, Instant.now());
-		if (msBetweenOpenAndNow <= LEDGER_OPEN_PERIOD_MS)
+		if (msBetweenOpenAndNow >= LEDGER_OPEN_PERIOD_MS)
 		{
 			// handling ledger open timeout
 			currentWorldState.runInCriticalSection((ourLedger) ->
