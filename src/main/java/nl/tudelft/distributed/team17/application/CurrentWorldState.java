@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.application;
 
+import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
 import nl.tudelft.distributed.team17.service.WorldStateGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,9 @@ public class CurrentWorldState
 
 	public synchronized void addCommand(Command command)
 	{
+		// TODO: hash commands so we make sure not to duplicate them for current ledger
+		// TODO: don't search further than the worldstate that the command was based on
+		// TODO: make sure that the worldstate clock is properly maintained
 		if (command.isPriority())
 		{
 			// todo: optimization, don't queue if the ledger only contains priority commands because in that case we can apply it directly
@@ -90,5 +94,11 @@ public class CurrentWorldState
 		 * @return The Ledger to make into the new head
 		 */
 		Ledger runInCriticalSectionOfCurrentWorldState(Ledger currentHeadLedger);
+	}
+
+	public WorldState getLastCheckpoint()
+	{
+		// TODO: optimize
+		return currentLedger.getLastAcceptedWorldState();
 	}
 }

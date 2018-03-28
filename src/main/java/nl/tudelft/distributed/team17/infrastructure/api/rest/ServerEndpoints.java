@@ -60,6 +60,16 @@ public class ServerEndpoints
 		{
 			Optional<LedgerDto> winnerOfRound = ledgerExchangeRoundManager.getWinnerOfRound(generationOfLedger);
 
+			try
+			{
+				Thread.sleep(PERIOD_IN_MS);
+			}
+			catch (InterruptedException ex)
+			{
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ex);
+			}
+
 			if (winnerOfRound.isPresent())
 			{
 				return winnerOfRound.get();

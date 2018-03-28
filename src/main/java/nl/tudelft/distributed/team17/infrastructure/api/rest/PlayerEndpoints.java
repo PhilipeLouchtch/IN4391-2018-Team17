@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.infrastructure.api.rest;
 
+import nl.tudelft.distributed.team17.application.CurrentWorldState;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.AttackCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.HealCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.MoveCommandDTO;
@@ -15,6 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "player")
 public class PlayerEndpoints
 {
+	private CurrentWorldState currentWorldState;
+
+	public PlayerEndpoints(CurrentWorldState currentWorldState)
+	{
+		this.currentWorldState = currentWorldState;
+	}
+
 	@PostMapping(path = "move")
 	public void move(@RequestBody MoveCommandDTO moveCommandDTO)
 	{
@@ -22,6 +30,8 @@ public class PlayerEndpoints
 				moveCommandDTO.getEmailAddress(),
 				moveCommandDTO.getClock(),
 				moveCommandDTO.getDirection());
+
+		currentWorldState.addCommand(playerMoveCommand);
 
 		// if command is for a more recent worldstate, we forward to another server via load balancer
 		// if we get the same command AGAIN, we reply and the original server tries again
@@ -41,6 +51,8 @@ public class PlayerEndpoints
 				healCommandDTO.getEmailAddress(),
 				healCommandDTO.getClock(),
 				healCommandDTO.getLocationToHeal());
+
+		currentWorldState.addCommand(playerHealCommand);
 		// push command to game
 	}
 
@@ -51,6 +63,8 @@ public class PlayerEndpoints
 				attackCommandDTO.getEmailAddress(),
 				attackCommandDTO.getClock(),
 				attackCommandDTO.getLocationToAttack());
+
+		currentWorldState.addCommand(playerAttackCommand);
 		// push command to game
 	}
 
@@ -58,12 +72,13 @@ public class PlayerEndpoints
 	public Unit spawn(@RequestBody SpawnCommandDTO spawnCommandDTO)
 	{
 
+		// TODO: wait 2 world states
 		return null;
 	}
 
 	@PostMapping(path = "worldstate")
 	public WorldState worldState()
 	{
-		return null;
+		return currentWorldState.getLastCheckpoint();
 	}
 }

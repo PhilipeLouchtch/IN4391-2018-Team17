@@ -70,6 +70,16 @@ public class Ledger
 		return new Ledger(NO_PREVIOUS, NO_WORLDSTATE, generation, IS_CLOSED, commandsAcceptedSoFar, tieBreaker);
 	}
 
+	public synchronized WorldState getLastAcceptedWorldState()
+	{
+		if (isClosed() || isGenesis())
+		{
+			return worldState;
+		}
+
+		return previous.worldState;
+	}
+
 	public synchronized Ledger makeNewHead()
 	{
 		final int roll = random.nextInt();
