@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.application;
 
+import com.rits.cloning.Cloner;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
 
@@ -73,8 +74,12 @@ public class Ledger
 		final int roll = random.nextInt();
 		final int commandsAcceptedSoFar = this.commandsAcceptedSoFar;
 		final int generation = this.generation + 1;
+		
+		// Clone WorldState, so we always have an old, not changed copy
+		Cloner cloner = new Cloner();
+		WorldState copiedWorldState = cloner.deepClone(this.worldState);
 
-		return new Ledger(this, this.worldState, generation, false, commandsAcceptedSoFar, roll);
+		return new Ledger(this, copiedWorldState, generation, false, commandsAcceptedSoFar, roll);
 	}
 
 	/**
@@ -97,8 +102,9 @@ public class Ledger
 		try
 		{
 			commands.add(command);
-			command.apply(worldState);
+			command.apply(this.worldState);
 			commandsAcceptedSoFar++;
+			this.worldState.updateWorldStateClock();
 		}
 		catch (Exception ex)
 		{
@@ -122,11 +128,11 @@ public class Ledger
 
 		if (!this.isGenesis())
 		{
-			WorldState worldStateResultingFromPreviousLedger = this.previous.worldState;
-
+			WorldState startingWorldState = this.previous.worldState;
 			try
 			{
-				this.worldState = worldStateResultingFromPreviousLedger;
+				this.worldState = startingWorldState;
+
 				for (int i = 0; i < commands.size(); i++)
 				{
 					Command command = commands.get(i);

@@ -156,4 +156,9 @@ public class WorldState
 	{
 		return units.anyDragonLeft();
 	}
+
+	public void updateWorldStateClock()
+	{
+		worldStateClock++;
+	}
 }
