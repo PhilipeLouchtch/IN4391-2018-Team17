@@ -3,10 +3,7 @@ package nl.tudelft.distributed.team17.application;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Ledger
 {
@@ -30,7 +27,7 @@ public class Ledger
 	// holds a tie-breaking roll
 	private final int tieBreaker;
 
-	// todo: ledger Id & accepted commands in chain fields / methods
+	// TODO: Hashcode of Ledger once closed
 
 	private Ledger(Ledger previous, WorldState worldState, int generation, boolean isClosed, int commandsAcceptedSoFar, int tieBreaker)
 	{
@@ -45,13 +42,25 @@ public class Ledger
 
 	public static Ledger genesis(WorldState worldState)
 	{
-		final int noCommandsAcceptedSoFar = 0;
-		final int roll = random.nextInt();
-		final int generation = 0;
+		Objects.requireNonNull(worldState, "A genesis Ledger cannot have null as WorldState");
 
-		return new Ledger(NO_PREVIOUS, worldState, generation, false, noCommandsAcceptedSoFar, roll);
+		final int ZERO_COMMANDS_IN_LEDGER_THUS_FAR = 0;
+		final int RANDOM_ROLL_AS_TIEBREAKER = random.nextInt();
+		final int GENERATION_ZERO = 0;
+		final boolean LEDGER_IS_OPEN = true;
+
+		return new Ledger(NO_PREVIOUS, worldState, GENERATION_ZERO, LEDGER_IS_OPEN, ZERO_COMMANDS_IN_LEDGER_THUS_FAR, RANDOM_ROLL_AS_TIEBREAKER);
 	}
 
+	/**
+	 * Makes a Ledger that is not a Genesis ledger, and is not conected to any Ledger in the chain.
+	 * Used in creating Ledger instances that are to be integrated into the local chain whose data came from an
+	 * external machine or process.
+	 * @param generation The generation number of the Ledger to construct
+	 * @param commandsAcceptedSoFar The number of commands that the Ledger and its chain have seen
+	 * @param tieBreaker The tie-breaker number generated for the Ledger
+	 * @return A newly constructed Ledger without a link to a previous Ledger in the chain
+	 */
 	public static Ledger makeFloating(int generation, int commandsAcceptedSoFar, int tieBreaker)
 	{
 		final boolean IS_CLOSED = true;
@@ -146,7 +155,14 @@ public class Ledger
 
 	public boolean isGenesis()
 	{
-		return previous == null;
+		// Genesis blocks have no parent but do have a worldState
+		return previous == null && worldState != null;
+	}
+
+	public boolean isFloating()
+	{
+		// "FLoating" blocks have no parent and no worldState
+		return previous == null && worldState == null;
 	}
 
 	public int getGeneration()

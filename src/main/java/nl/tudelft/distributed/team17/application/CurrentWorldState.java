@@ -83,6 +83,11 @@ public class CurrentWorldState
 	@FunctionalInterface
 	public interface CurrentWorldStateCriticalSection
 	{
-		void runInCriticalSectionOfCurrentWorldState(Ledger currentLedgerProvider);
+		/**
+		 * Function to run within the Critical Section of the CurrentWorldState instance, the returned Ledger will be made the new head
+		 * @param currentHeadLedger The current "head" ledger
+		 * @return The Ledger to make into the new head
+		 */
+		Ledger runInCriticalSectionOfCurrentWorldState(Ledger currentHeadLedger);
 	}
 }

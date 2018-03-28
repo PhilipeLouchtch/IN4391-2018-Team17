@@ -17,16 +17,16 @@ public class LedgerDto
 	@JsonProperty("generation")
 	private int generation;
 
-	@JsonProperty("roll")
-	private int roll;
+	@JsonProperty("tieBreaker")
+	private int tieBreaker;
 
-	public LedgerDto(List<Command> commands, int commandsAcceptedByLedgerChain, int generation, int roll)
+	public LedgerDto(List<Command> commands, int commandsAcceptedByLedgerChain, int generation, int tieBreaker)
 	{
 		this();
 		this.commands = commands;
 		this.commandsAcceptedByLedgerChain = commandsAcceptedByLedgerChain;
 		this.generation = generation;
-		this.roll = roll;
+		this.tieBreaker = tieBreaker;
 	}
 
 	public static LedgerDto from(Ledger ledger)
@@ -49,14 +49,14 @@ public class LedgerDto
 		return generation;
 	}
 
-	public int getRoll()
+	public int getTieBreaker()
 	{
-		return roll;
+		return tieBreaker;
 	}
 
 	public Ledger toLedger()
 	{
-		return new Ledger(null, null, this.generation, true, commandsAcceptedByLedgerChain, roll);
+		return Ledger.makeFloating(generation, commandsAcceptedByLedgerChain, tieBreaker);
 	}
 
 	// For Jackson

@@ -26,7 +26,7 @@ public class CommandProcessor
 	{
 		try
 		{
-			currentWorldState.applyToConsideredWorldState(command::apply);
+			currentWorldState.addCommand(command);
 		}
 		catch (Exception ex)
 		{
