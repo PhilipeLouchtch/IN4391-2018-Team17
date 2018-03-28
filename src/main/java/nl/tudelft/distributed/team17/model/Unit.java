@@ -89,7 +89,7 @@ public class Unit
 		return random.nextInt(upperBound - lowerBound + 1) + lowerBound;
 	}
 
-	public Unit moved(distributed.systems.das.units.Unit.Direction direction)
+	public Unit moved(Direction direction)
 	{
 		Location newLocation = location.moved(direction);
 		return unitMoved(this, newLocation);

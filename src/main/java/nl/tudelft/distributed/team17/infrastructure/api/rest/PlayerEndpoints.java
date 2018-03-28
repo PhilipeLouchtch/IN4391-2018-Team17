@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class PlayerEndpoints
 {
 	@PostMapping(path = "move")
-	public WorldState move(@RequestBody MoveCommandDTO moveCommandDTO)
+	public void move(@RequestBody MoveCommandDTO moveCommandDTO)
 	{
 		PlayerMoveCommand playerMoveCommand = PlayerMoveCommand.createWithEmailAuthentication(
 				moveCommandDTO.getEmailAddress(),
@@ -32,41 +32,37 @@ public class PlayerEndpoints
 		// Object callback = (state) -> worldState = state;
 
 		// Send the command (if accepted) to other servers
-
-		//spin/sleep until worldstate is set
-
-		// return the new world state
-		return null;
 	}
 
 	@PostMapping(path = "heal")
-	public WorldState heal(@RequestBody HealCommandDTO healCommandDTO)
+	public void heal(@RequestBody HealCommandDTO healCommandDTO)
 	{
 		PlayerHealCommand playerHealCommand = PlayerHealCommand.createWithEmailAuthentication(
 				healCommandDTO.getEmailAddress(),
 				healCommandDTO.getClock(),
 				healCommandDTO.getLocationToHeal());
 		// push command to game
-
-		// return the new world state
-		return null;
 	}
 
 	@PostMapping(path = "attack")
-	public WorldState attack(@RequestBody AttackCommandDTO attackCommandDTO)
+	public void attack(@RequestBody AttackCommandDTO attackCommandDTO)
 	{
 		PlayerAttackCommand playerAttackCommand = PlayerAttackCommand.createWithEmailAuthentication(
 				attackCommandDTO.getEmailAddress(),
 				attackCommandDTO.getClock(),
 				attackCommandDTO.getLocationToAttack());
 		// push command to game
-
-		// return the new world state
-		return null;
 	}
 
 	@PostMapping(path = "spawn")
 	public Unit spawn(@RequestBody SpawnCommandDTO spawnCommandDTO)
+	{
+
+		return null;
+	}
+
+	@PostMapping(path = "worldstate")
+	public WorldState worldState()
 	{
 
 		return null;

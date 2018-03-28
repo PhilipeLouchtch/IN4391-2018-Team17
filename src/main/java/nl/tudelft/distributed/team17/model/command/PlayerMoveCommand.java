@@ -1,23 +1,23 @@
 package nl.tudelft.distributed.team17.model.command;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import distributed.systems.das.units.Unit;
+import nl.tudelft.distributed.team17.model.Direction;
 import nl.tudelft.distributed.team17.model.WorldState;
 
 public class PlayerMoveCommand extends PlayerCommand
 {
 	@JsonProperty("direction")
-	private Unit.Direction direction;
+	private Direction direction;
 
 	static public PlayerMoveCommand createWithEmailAuthentication(
 			String emailAddress,
 			Integer clock,
-			Unit.Direction direction)
+			Direction direction)
 	{
 		return new PlayerMoveCommand(emailAddress, clock, direction);
 	}
 
-	public PlayerMoveCommand(String emailAddress, Integer clock, Unit.Direction direction)
+	public PlayerMoveCommand(String emailAddress, Integer clock, Direction direction)
 	{
 		super(emailAddress, clock, false);
 		this.direction = direction;
@@ -28,7 +28,7 @@ public class PlayerMoveCommand extends PlayerCommand
 	{
 	}
 
-	public Unit.Direction getDirection()
+	public Direction getDirection()
 	{
 		return direction;
 	}

@@ -23,6 +23,7 @@ public class ServerEndpoints
 
 		// TODO: atomic request current Ledger and Start the Exchange protocol...
 
-		currentWorldState.
+		// currentWorldState.
+		return null;
 	}
 }

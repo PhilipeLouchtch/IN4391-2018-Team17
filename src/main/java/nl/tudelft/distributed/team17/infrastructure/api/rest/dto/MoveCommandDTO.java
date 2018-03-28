@@ -1,7 +1,7 @@
 package nl.tudelft.distributed.team17.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import distributed.systems.das.units.Unit;
+import nl.tudelft.distributed.team17.model.Direction;
 
 public class MoveCommandDTO
 {
@@ -12,9 +12,9 @@ public class MoveCommandDTO
     private Integer clock;
 
     @JsonProperty("direction")
-    private Unit.Direction direction;
+    private Direction direction;
 
-    public MoveCommandDTO(String emailAddress, Integer clock, Unit.Direction direction)
+    public MoveCommandDTO(String emailAddress, Integer clock, Direction direction)
     {
         this.emailAddress = emailAddress;
         this.clock = clock;
@@ -36,7 +36,7 @@ public class MoveCommandDTO
         return clock;
     }
 
-    public Unit.Direction getDirection()
+    public Direction getDirection()
     {
         return direction;
     }
