@@ -90,7 +90,7 @@ public class InterServerCommunication
 		for(String server : knownServers)
 		{
 			// optimization: serialize only once
-			executorService.submit(() -> sendCommandToServer("http://" + server, command));
+			executorService.submit(() -> sendCommandToServer("http://" + server + ServerEndpoints.serverForwardedCommandEndpoint, command));
 		}
 	}
 
