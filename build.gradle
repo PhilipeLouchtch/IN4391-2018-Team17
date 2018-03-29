@@ -22,6 +22,7 @@ repositories {
 
 springBoot {
 	mainClass = 'nl.tudelft.distributed.team17.Application'
+	classifier = 'repackaged'
 }
 
 
@@ -46,9 +47,9 @@ idea {
 }
 
 docker {
-    name 'IN4391-2018-team17-server'
+    name 'in4391-2018-team17-server'
 	tags 'latest'
-	dockerfile file('./src/docker/Dockerfile')
+	dockerfile file('Dockerfile')
 
 	files tasks.bootRepackage.outputs
 }
