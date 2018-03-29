@@ -3,6 +3,8 @@ package nl.tudelft.distributed.team17.application;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,16 +13,20 @@ import java.util.Set;
 public class KnownServerList
 {
 	private Set<String> knownServers;
+	private String thisServer;
 
 	@Autowired
-	public KnownServerList()
+	public KnownServerList() throws UnknownHostException
 	{
-		this(new HashSet<>());
+		this(new HashSet<>(), InetAddress.getLocalHost().getHostAddress());
 	}
 
-	public KnownServerList(Set<String> knownServers)
+	public KnownServerList(Set<String> knownServers, String thisServer)
 	{
-		this.knownServers = knownServers;
+		this.knownServers = new HashSet<>(knownServers);
+		this.knownServers.remove(thisServer);
+
+		this.thisServer = thisServer;
 	}
 
 	/**
@@ -36,7 +42,18 @@ public class KnownServerList
 	 * Returns an unmodifiable set of known server locations
 	 * @return An unmodifiable set
 	 */
-	public Set<String> getKnownServers()
+	public Set<String> getAllKnownServers()
+	{
+		HashSet<String> servers = new HashSet<>(knownServers);
+		servers.add(thisServer);
+
+		return servers;
+	}
+
+	/**
+	 * Returns all known servers except this server
+	 */
+	public Set<String> getKnownOtherServers()
 	{
 		return Collections.unmodifiableSet(knownServers);
 	}

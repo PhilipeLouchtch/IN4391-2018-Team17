@@ -32,9 +32,10 @@ public class Bootstrapper implements Runnable
 	@Override
 	public void run()
 	{
-		byte[] address = Try.getting(() -> InetAddress.getLocalHost().getAddress()).or(Rethrow.asRuntime());
+		InetAddress localHost = Try.getting(InetAddress::getLocalHost).or(Rethrow.asRuntime());
+		byte[] address = localHost.getAddress();
 
-		LOG.info(String.format("Starting server at [%s]", String.valueOf(address)));
+		LOG.info(String.format("Starting server at [%s]", String.valueOf(localHost.getHostAddress())));
 		String serverAbove = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) + 1);
 		String serverBelow = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) - 1);
 
@@ -52,7 +53,7 @@ public class Bootstrapper implements Runnable
 
 				try
 				{
-					ArrayList<String> known = new ArrayList<>(knownServerList.getKnownServers());
+					ArrayList<String> known = new ArrayList<>(knownServerList.getAllKnownServers());
 					ArrayList<String> arrayList = (ArrayList<String>) restTemplate.postForObject(uri, known, known.getClass());
 
 					arrayList.forEach(knownServerList::acceptServer);

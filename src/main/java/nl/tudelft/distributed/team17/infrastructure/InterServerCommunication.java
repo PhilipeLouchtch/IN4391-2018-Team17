@@ -48,7 +48,7 @@ public class InterServerCommunication
 		{
 			LedgerDto ourLedgerAsDto = LedgerDto.from(ledger);
 
-			Set<String> knownServers = knownServerList.getKnownServers();
+			Set<String> knownServers = knownServerList.getKnownOtherServers();
 
 			// hacky: List of Callable<LedgerDto> instead of Runnable to more easily set timeouts on the tasks through executorService.invokeAll(...)
 			List<Callable<LedgerDto>> fns = new ArrayList<>(knownServers.size());
@@ -85,7 +85,7 @@ public class InterServerCommunication
 
 	public void broadcast(Command command)
 	{
-		Set<String> knownServers = knownServerList.getKnownServers();
+		Set<String> knownServers = knownServerList.getAllKnownServers();
 		List<Runnable> fns = new ArrayList<>(knownServers.size());
 		for(String server : knownServers)
 		{

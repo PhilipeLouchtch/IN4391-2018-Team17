@@ -92,13 +92,13 @@ public class ServerEndpoints
 			knownServerList.acceptServer(server);
 		}
 
-		return new ArrayList<>(knownServerList.getKnownServers());
+		return new ArrayList<>(knownServerList.getAllKnownServers());
 	}
 
 	@GetMapping(path = "knownservers")
 	public Set<String> getKnownServers()
 	{
-		return knownServerList.getKnownServers();
+		return knownServerList.getAllKnownServers();
 	}
 
 	@PostMapping(path = ServerEndpoints.serverForwardedCommandEndpoint)
