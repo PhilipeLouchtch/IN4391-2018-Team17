@@ -2,7 +2,6 @@ package nl.tudelft.distributed.team17.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -15,6 +14,11 @@ public class UnitsInWorld
     private UnitsInWorld(Map<String, Unit> units)
     {
         this.units = units;
+    }
+
+    // JACKSON
+    private UnitsInWorld()
+    {
     }
 
     public static UnitsInWorld initial()

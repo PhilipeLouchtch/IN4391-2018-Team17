@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
+@RequestMapping
 public class PlayerEndpoints
 {
 	public static final String movePlayerEndpoint = "/move";
@@ -95,7 +96,7 @@ public class PlayerEndpoints
 		commandForwarder.forward(playerAttackCommand);
 	}
 
-	@PutMapping(path = PlayerEndpoints.spawnPlayerEndpoint)
+	@PostMapping(path = PlayerEndpoints.spawnPlayerEndpoint)
 	public Unit spawn(@RequestBody SpawnCommandDTO spawnCommandDTO)
 	{
 		ledgerController.startRunning();

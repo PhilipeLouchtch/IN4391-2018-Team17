@@ -207,8 +207,14 @@ public class ClientBot implements Runnable
             }
             break;
         }
-
-        LOGGER.info(String.format("[%s, %s]: Got worldState [%s]", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
+        if (currentWorldState == null)
+        {
+            LOGGER.info(String.format("[%s, null]: Got worldState [%s]", clientId, worldState.getWorldStateClock()));
+        }
+        else
+        {
+            LOGGER.info(String.format("[%s, %s]: Got worldState [%s]", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
+        }
         this.currentWorldState = worldState;
 
         Optional<Unit> playerUnit = worldState.findPlayerUnit(clientId);

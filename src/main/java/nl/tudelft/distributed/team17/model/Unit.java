@@ -33,6 +33,11 @@ public class Unit
 	@JsonProperty("attackPower")
 	private Integer attackPower;
 
+	// JACKSON
+	private Unit()
+	{
+	}
+
 	private Unit(UnitType unitType, String id, Location location, UnitHealth unitHealth, Integer attackPower)
 	{
 		this.unitType = unitType;
@@ -52,7 +57,7 @@ public class Unit
 		return new Unit(unit.unitType, unit.id, location, unit.unitHealth, unit.attackPower);
 	}
 
-	static public Unit constructRandomUnit(Random random, String unitId, UnitType unitType)
+	public static Unit constructRandomUnit(Random random, String unitId, UnitType unitType)
 	{
 		switch(unitType)
 		{

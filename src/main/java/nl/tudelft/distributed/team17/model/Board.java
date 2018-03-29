@@ -23,6 +23,11 @@ public class Board
 		return new Board(BOARD_SIZE);
 	}
 
+	// JACKSON
+	private Board()
+	{
+	}
+
 	public boolean isValidLocation(Location location)
 	{
 		int x = location.getX(), y = location.getY();
