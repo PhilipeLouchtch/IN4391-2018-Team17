@@ -23,11 +23,12 @@ public class LedgerController implements Runnable
 
 	private Instant ledgerOpenedAtInstant;
 
-	public LedgerController(InterServerCommunication interServerCommunication, CurrentWorldState currentWorldState, LedgerConsensus ledgerConsensus, LedgerExchangeRoundManager ledgerExchangeRoundManager)
+	public LedgerController(InterServerCommunication interServerCommunication, CurrentWorldState currentWorldState, LedgerConsensus ledgerConsensus, LedgerExchangeRoundManager ledgerExchangeRoundManager, ExecutorService executorService)
 	{
 		this.interServerCommunication = interServerCommunication;
 		this.currentWorldState = currentWorldState;
 		this.ledgerConsensus = ledgerConsensus;
+		this.executorService = executorService;
 
 		this.ledgerOpenedAtInstant = IS_NOT_RUNNING;
 	}
