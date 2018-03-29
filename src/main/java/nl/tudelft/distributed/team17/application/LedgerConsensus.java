@@ -59,6 +59,17 @@ public class LedgerConsensus
 		{
 			if (ledgerOne.getTieBreaker() == ledgerTwo.getTieBreaker())
 			{
+				if (ledgerOne.hashCode() == ledgerTwo.hashCode()) {
+					return ledgerOne;
+				}
+
+				if (ledgerOne.getCommands().size() != ledgerTwo.getCommands().size()){
+					LOG.error("~~~~~~~~ COMMAND SIZES MIS-MATCH");
+				}
+				else if (ledgerOne.getCommands().size() == 0) {
+					return ledgerOne;
+				}
+
 				RuntimeException fatalException = new RuntimeException("Unrecoverable error: ledgers are both as-good and have same tie breaker, cannot pick!");
 				LOG.error("LedgerConsensus run into a critical error", fatalException);
 

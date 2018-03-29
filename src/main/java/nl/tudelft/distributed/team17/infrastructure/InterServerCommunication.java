@@ -85,7 +85,7 @@ public class InterServerCommunication
 
 	public void broadcast(Command command)
 	{
-		Set<String> knownServers = knownServerList.getAllKnownServers();
+		Set<String> knownServers = knownServerList.getKnownOtherServers();
 		List<Runnable> fns = new ArrayList<>(knownServers.size());
 		for(String server : knownServers)
 		{
