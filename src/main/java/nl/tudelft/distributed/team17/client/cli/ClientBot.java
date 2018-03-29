@@ -174,8 +174,16 @@ public class ClientBot implements Runnable
     // Returns true if client unit found in the returned worldState, false if not found in the returned worldState
     public boolean updateWorldState()
     {
-        LOGGER.info(String.format("[%s, %s]: Requesting new worldState", clientId, currentWorldState.getWorldStateClock()));
+    	if (currentWorldState == null)
+	    {
+		    LOGGER.info(String.format("[%s, null]: Requesting worldState for first time", clientId));
+	    }
+	    else
+	    {
+		    LOGGER.info(String.format("[%s, %s]: Requesting worldState for first time", clientId, currentWorldState.getWorldStateClock()));
+	    }
         WorldState worldState = makeRequest("worldstate", WorldState.class);
+
         LOGGER.info(String.format("[%s, %s]: Got worldState [%s]", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
         this.currentWorldState = worldState;
 
