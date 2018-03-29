@@ -39,13 +39,12 @@ public class ServerEndpoints
 	@PostMapping(path = ServerEndpoints.ledgerExchangeEndpoint)
 	public LedgerDto exchangeLedgers(@RequestBody LedgerDto ledgerAsDto, HttpServletRequest request)
 	{
+		LOG.info("Received a Ledger Exchange request from {}, with ledger@#{}", request.getRemoteHost(), ledgerAsDto.getCommandsAcceptedByLedgerChain());
+
 		ledgerController.startRunning();
 
 		int generationOfLedger = ledgerAsDto.getGeneration();
 
-		// TODO: atomic request current Ledger and Start the Exchange protocol...
-
-		// Good enough?? Or need to check X-Forwarded-For anyway?
 		String serverId = request.getRemoteAddr();
 
 		try
@@ -103,8 +102,9 @@ public class ServerEndpoints
 	}
 
 	@PostMapping(path = ServerEndpoints.serverForwardedCommandEndpoint)
-	public void acceptForwardedCommand(@RequestBody Command command)
+	public void acceptForwardedCommand(@RequestBody Command command, HttpServletRequest httpServletRequest)
 	{
+		LOG.info("Received a forwarded command from {}, command being {}", httpServletRequest.getRemoteHost(), String.valueOf(command));
 		ledgerController.startRunning();
 
 		currentWorldState.addCommand(command);
