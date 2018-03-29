@@ -6,18 +6,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ClientCliApplication implements CommandLineRunner
+public class ClientCliApplication
 {
     public static void main(String[] args)
     {
         //disabled banner, don't want to see the spring logo
         SpringApplication app = new SpringApplication(ClientCliApplication.class);
         app.setBannerMode(Banner.Mode.OFF);
-        app.run(args);
+        ClientCliApplication bean = app.run(args).getBean(ClientCliApplication.class);
+
+        bean.run();
     }
 
-    @Override
-    public void run(String... args) throws Exception
+    public void run()
     {
         ClientBot clientBot = new ClientBot("http://192.168.1.1", "clientId0");
         clientBot.run();
