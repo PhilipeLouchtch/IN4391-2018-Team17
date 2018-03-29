@@ -4,6 +4,7 @@ import nl.tudelft.distributed.team17.application.KnownServerList;
 import nl.tudelft.distributed.team17.application.LedgerExchangeRoundManager;
 import nl.tudelft.distributed.team17.application.CurrentWorldState;
 import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
+import nl.tudelft.distributed.team17.model.command.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +25,15 @@ public class ServerEndpoints
 
 	public static final String ledgerExchangeEndpoint = "/ledger/exchange";
 	public static final String serverExchangeEndpoint = "/bootstrap/server";
+	public static final String serverForwardedCommandEndpoint = "/forwarded/command";
 
+	private CurrentWorldState currentWorldState;
 	private LedgerExchangeRoundManager ledgerExchangeRoundManager;
 	private KnownServerList knownServerList;
 
-	public ServerEndpoints(LedgerExchangeRoundManager ledgerExchangeRoundManager, KnownServerList knownServerList)
+	public ServerEndpoints(CurrentWorldState currentWorldState, LedgerExchangeRoundManager ledgerExchangeRoundManager, KnownServerList knownServerList)
 	{
+		this.currentWorldState = currentWorldState;
 		this.ledgerExchangeRoundManager = ledgerExchangeRoundManager;
 		this.knownServerList = knownServerList;
 	}
@@ -91,5 +95,11 @@ public class ServerEndpoints
 		}
 
 		return new ArrayList<>(knownServerList.getKnownServers());
+	}
+
+	@PostMapping(path = ServerEndpoints.serverForwardedCommandEndpoint)
+	public void acceptForwardedCommand(@RequestBody Command command)
+	{
+		currentWorldState.addCommand(command);
 	}
 }

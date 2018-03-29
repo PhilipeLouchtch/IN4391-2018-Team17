@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.infrastructure.api.rest;
 
+import nl.tudelft.distributed.team17.application.CommandForwarder;
 import nl.tudelft.distributed.team17.application.CurrentWorldState;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.AttackCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.HealCommandDTO;
@@ -10,17 +11,22 @@ import nl.tudelft.distributed.team17.model.command.PlayerAttackCommand;
 import nl.tudelft.distributed.team17.model.command.PlayerHealCommand;
 import nl.tudelft.distributed.team17.model.command.PlayerMoveCommand;
 import nl.tudelft.distributed.team17.model.WorldState;
+import nl.tudelft.distributed.team17.model.command.PlayerSpawnCommand;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "player")
 public class PlayerEndpoints
 {
 	private CurrentWorldState currentWorldState;
+	private CommandForwarder commandForwarder;
 
-	public PlayerEndpoints(CurrentWorldState currentWorldState)
+	public PlayerEndpoints(CurrentWorldState currentWorldState, CommandForwarder commandForwarder)
 	{
 		this.currentWorldState = currentWorldState;
+		this.commandForwarder = commandForwarder;
 	}
 
 	@PostMapping(path = "move")
@@ -32,6 +38,7 @@ public class PlayerEndpoints
 				moveCommandDTO.getDirection());
 
 		currentWorldState.addCommand(playerMoveCommand);
+		commandForwarder.forward(playerMoveCommand);
 
 		// if command is for a more recent worldstate, we forward to another server via load balancer
 		// if we get the same command AGAIN, we reply and the original server tries again
@@ -53,7 +60,7 @@ public class PlayerEndpoints
 				healCommandDTO.getLocationToHeal());
 
 		currentWorldState.addCommand(playerHealCommand);
-		// push command to game
+		commandForwarder.forward(playerHealCommand);
 	}
 
 	@PostMapping(path = "attack")
@@ -65,14 +72,50 @@ public class PlayerEndpoints
 				attackCommandDTO.getLocationToAttack());
 
 		currentWorldState.addCommand(playerAttackCommand);
-		// push command to game
+		commandForwarder.forward(playerAttackCommand);
 	}
 
 	@PostMapping(path = "spawn")
 	public Unit spawn(@RequestBody SpawnCommandDTO spawnCommandDTO)
 	{
+		PlayerSpawnCommand playerSpawnCommand = PlayerSpawnCommand.createWithEmailAuthentication(
+				spawnCommandDTO.getEmailAddress(),
+				spawnCommandDTO.getClock());
 
-		// TODO: wait 2 world states
+		// Push the command and wait for the unit to appear in a Ledger that has been accepted by the servers
+		// Limit waiting to two ledgers, achieved by looking at the amount of times the worldstate changes "clock"
+
+		int numWorldStateChangesWaited = 0;
+		Integer worldStateClockBeginWait = currentWorldState.getLastCheckpoint().getWorldStateClock();
+
+		currentWorldState.addCommand(playerSpawnCommand);
+		commandForwarder.forward(playerSpawnCommand);
+
+		while (numWorldStateChangesWaited < 2)
+		{
+			try
+			{
+				Thread.sleep(100);
+			}
+			catch (InterruptedException ex)
+			{
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ex);
+			}
+
+			Integer worldStateClock = currentWorldState.getLastCheckpoint().getWorldStateClock();
+			if (worldStateClock > worldStateClockBeginWait)
+			{
+				Optional<Unit> playerUnit = currentWorldState.getLastCheckpoint().findPlayerUnit(playerSpawnCommand.getPlayerId());
+				if (playerUnit.isPresent())
+				{
+					return playerUnit.get();
+				}
+
+				numWorldStateChangesWaited++;
+			}
+		}
+
 		return null;
 	}
 
