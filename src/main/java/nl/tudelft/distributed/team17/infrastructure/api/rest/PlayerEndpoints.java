@@ -2,6 +2,7 @@ package nl.tudelft.distributed.team17.infrastructure.api.rest;
 
 import nl.tudelft.distributed.team17.application.CommandForwarder;
 import nl.tudelft.distributed.team17.application.CurrentWorldState;
+import nl.tudelft.distributed.team17.application.LedgerController;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.AttackCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.HealCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.MoveCommandDTO;
@@ -22,16 +23,20 @@ public class PlayerEndpoints
 {
 	private CurrentWorldState currentWorldState;
 	private CommandForwarder commandForwarder;
+	private LedgerController ledgerController;
 
-	public PlayerEndpoints(CurrentWorldState currentWorldState, CommandForwarder commandForwarder)
+	public PlayerEndpoints(CurrentWorldState currentWorldState, CommandForwarder commandForwarder, LedgerController ledgerController)
 	{
 		this.currentWorldState = currentWorldState;
 		this.commandForwarder = commandForwarder;
+		this.ledgerController = ledgerController;
 	}
 
 	@PostMapping(path = "move")
 	public void move(@RequestBody MoveCommandDTO moveCommandDTO)
 	{
+		ledgerController.startRunning();
+
 		PlayerMoveCommand playerMoveCommand = PlayerMoveCommand.createWithEmailAuthentication(
 				moveCommandDTO.getEmailAddress(),
 				moveCommandDTO.getClock(),
@@ -54,6 +59,8 @@ public class PlayerEndpoints
 	@PostMapping(path = "heal")
 	public void heal(@RequestBody HealCommandDTO healCommandDTO)
 	{
+		ledgerController.startRunning();
+
 		PlayerHealCommand playerHealCommand = PlayerHealCommand.createWithEmailAuthentication(
 				healCommandDTO.getEmailAddress(),
 				healCommandDTO.getClock(),
@@ -66,6 +73,8 @@ public class PlayerEndpoints
 	@PostMapping(path = "attack")
 	public void attack(@RequestBody AttackCommandDTO attackCommandDTO)
 	{
+		ledgerController.startRunning();
+
 		PlayerAttackCommand playerAttackCommand = PlayerAttackCommand.createWithEmailAuthentication(
 				attackCommandDTO.getEmailAddress(),
 				attackCommandDTO.getClock(),
@@ -78,6 +87,8 @@ public class PlayerEndpoints
 	@PostMapping(path = "spawn")
 	public Unit spawn(@RequestBody SpawnCommandDTO spawnCommandDTO)
 	{
+		ledgerController.startRunning();
+
 		PlayerSpawnCommand playerSpawnCommand = PlayerSpawnCommand.createWithEmailAuthentication(
 				spawnCommandDTO.getEmailAddress(),
 				spawnCommandDTO.getClock());
@@ -122,6 +133,8 @@ public class PlayerEndpoints
 	@PostMapping(path = "worldstate")
 	public WorldState worldState()
 	{
+		ledgerController.startRunning();
+
 		return currentWorldState.getLastCheckpoint();
 	}
 }

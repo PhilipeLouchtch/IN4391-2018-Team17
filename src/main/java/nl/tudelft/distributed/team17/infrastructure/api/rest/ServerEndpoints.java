@@ -1,8 +1,6 @@
 package nl.tudelft.distributed.team17.infrastructure.api.rest;
 
-import nl.tudelft.distributed.team17.application.KnownServerList;
-import nl.tudelft.distributed.team17.application.LedgerExchangeRoundManager;
-import nl.tudelft.distributed.team17.application.CurrentWorldState;
+import nl.tudelft.distributed.team17.application.*;
 import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
 import nl.tudelft.distributed.team17.model.command.Command;
 import org.slf4j.Logger;
@@ -30,18 +28,21 @@ public class ServerEndpoints
 	private CurrentWorldState currentWorldState;
 	private LedgerExchangeRoundManager ledgerExchangeRoundManager;
 	private KnownServerList knownServerList;
+	private LedgerController ledgerController;
 
-	public ServerEndpoints(CurrentWorldState currentWorldState, LedgerExchangeRoundManager ledgerExchangeRoundManager, KnownServerList knownServerList)
+	public ServerEndpoints(CurrentWorldState currentWorldState, LedgerExchangeRoundManager ledgerExchangeRoundManager, KnownServerList knownServerList, LedgerController ledgerController)
 	{
 		this.currentWorldState = currentWorldState;
 		this.ledgerExchangeRoundManager = ledgerExchangeRoundManager;
 		this.knownServerList = knownServerList;
+		this.ledgerController = ledgerController;
 	}
 
 	@PostMapping(path = ServerEndpoints.ledgerExchangeEndpoint)
 	public LedgerDto exchangeLedgers(@RequestBody LedgerDto ledgerAsDto, HttpServletRequest request)
 	{
-//		Ledger ledger = ledgerAsDto.toLedger();
+		ledgerController.startRunning();
+
 		int generationOfLedger = ledgerAsDto.getGeneration();
 
 		// TODO: atomic request current Ledger and Start the Exchange protocol...
@@ -100,6 +101,8 @@ public class ServerEndpoints
 	@PostMapping(path = ServerEndpoints.serverForwardedCommandEndpoint)
 	public void acceptForwardedCommand(@RequestBody Command command)
 	{
+		ledgerController.startRunning();
+
 		currentWorldState.addCommand(command);
 	}
 }
