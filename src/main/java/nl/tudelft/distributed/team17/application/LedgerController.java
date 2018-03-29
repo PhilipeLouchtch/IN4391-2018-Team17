@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 @Component
 public class LedgerController implements Runnable
@@ -13,10 +14,12 @@ public class LedgerController implements Runnable
 	private static final long LEDGER_OPEN_PERIOD_MS = 500;
 	private static final long LEDGER_STATUS_CHECK_PERIOD_MS = 10;
 
+	private static final Instant IS_NOT_RUNNING = null;
+
 	private CurrentWorldState currentWorldState;
 	private InterServerCommunication interServerCommunication;
 	private LedgerConsensus ledgerConsensus;
-	private LedgerExchangeRoundManager ledgerExchangeRoundManager;
+	private ExecutorService executorService;
 
 	private Instant ledgerOpenedAtInstant;
 
@@ -25,7 +28,21 @@ public class LedgerController implements Runnable
 		this.interServerCommunication = interServerCommunication;
 		this.currentWorldState = currentWorldState;
 		this.ledgerConsensus = ledgerConsensus;
-		this.ledgerExchangeRoundManager = ledgerExchangeRoundManager;
+
+		this.ledgerOpenedAtInstant = IS_NOT_RUNNING;
+	}
+
+	public boolean isRunning()
+	{
+		return ledgerOpenedAtInstant != IS_NOT_RUNNING;
+	}
+
+	public void startRunning()
+	{
+		if (!isRunning())
+		{
+			executorService.submit(this);
+		}
 	}
 
 	@Override
