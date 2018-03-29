@@ -39,10 +39,13 @@ public class KnownServerList
 	 */
 	public void acceptServer(String serverLocation)
 	{
-		String locationTrimmedInterned = serverLocation.trim().intern();
-		if(knownServers.add(locationTrimmedInterned))
+		if (!serverLocation.equals(thisServer))
 		{
-			LOG.info(String.format("Accepted server new %s", locationTrimmedInterned));
+			String locationTrimmedInterned = serverLocation.trim();
+			if(knownServers.add(locationTrimmedInterned))
+			{
+				LOG.info(String.format("Accepted server new %s", locationTrimmedInterned));
+			}
 		}
 	}
 
