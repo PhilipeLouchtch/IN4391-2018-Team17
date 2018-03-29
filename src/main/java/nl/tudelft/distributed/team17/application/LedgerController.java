@@ -1,6 +1,11 @@
 package nl.tudelft.distributed.team17.application;
 
+import net.coolicer.functional.actions.Rethrow;
+import net.coolicer.util.Try;
 import nl.tudelft.distributed.team17.infrastructure.InterServerCommunication;
+import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -11,6 +16,8 @@ import java.util.concurrent.ExecutorService;
 @Component
 public class LedgerController implements Runnable
 {
+	private final static Logger LOG = LoggerFactory.getLogger(LedgerController.class);
+
 	private static final long LEDGER_OPEN_PERIOD_MS = 500;
 	private static final long LEDGER_STATUS_CHECK_PERIOD_MS = 10;
 
@@ -20,6 +27,7 @@ public class LedgerController implements Runnable
 	private InterServerCommunication interServerCommunication;
 	private LedgerConsensus ledgerConsensus;
 	private ExecutorService executorService;
+	private LedgerExchangeRoundManager ledgerExchangeRoundManager;
 
 	private Instant ledgerOpenedAtInstant;
 
@@ -29,6 +37,7 @@ public class LedgerController implements Runnable
 		this.currentWorldState = currentWorldState;
 		this.ledgerConsensus = ledgerConsensus;
 		this.executorService = executorService;
+		this.ledgerExchangeRoundManager = ledgerExchangeRoundManager;
 
 		this.ledgerOpenedAtInstant = IS_NOT_RUNNING;
 	}
@@ -50,15 +59,18 @@ public class LedgerController implements Runnable
 	public void run()
 	{
 		ledgerOpenedAtInstant = Instant.now();
-		try
+		while(true)
 		{
-			Thread.sleep(LEDGER_STATUS_CHECK_PERIOD_MS);
-			handleLedgerOpenTimeoutIfOccurred();
-		}
-		catch (InterruptedException ex)
-		{
-			Thread.currentThread().interrupt();
-			throw new RuntimeException(ex);
+			try
+			{
+				Thread.sleep(LEDGER_STATUS_CHECK_PERIOD_MS);
+				handleLedgerOpenTimeoutIfOccurred();
+			}
+			catch (InterruptedException ex)
+			{
+				Thread.currentThread().interrupt();
+				throw new RuntimeException(ex);
+			}
 		}
 	}
 
@@ -68,6 +80,7 @@ public class LedgerController implements Runnable
 		if (msBetweenOpenAndNow >= LEDGER_OPEN_PERIOD_MS)
 		{
 			// handling ledger open timeout
+			LOG.info("Ledger timeout occurred, handling");
 			doLedgerExchange();
 		}
 	}
@@ -83,11 +96,10 @@ public class LedgerController implements Runnable
 		{
 			ourLedger.setClosed();
 
+			// Workaround for when there's only one server: need to let ledgerExchangeRoundManager know of our ledger or it will spazz out
+			Try.doing(() -> ledgerExchangeRoundManager.accept("THIS_SERVER", LedgerDto.from(ourLedger))).or(Rethrow.asRuntime());
+
 			List<Ledger> ledgers = interServerCommunication.exchangeLedger(ourLedger);
-
-			// adding our own ledger to the list of received
-			ledgers.add(ourLedger);
-
 			Ledger agreedLedger = ledgerConsensus.runConsensus(ledgers, ourLedger.getGeneration());
 
 			return agreedLedger;
