@@ -13,26 +13,37 @@ import nl.tudelft.distributed.team17.model.command.PlayerHealCommand;
 import nl.tudelft.distributed.team17.model.command.PlayerMoveCommand;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.PlayerSpawnCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "player")
 public class PlayerEndpoints
 {
+	public static final String movePlayerEndpoint = "/move";
+	public static final String attackPlayerEndpoint = "/attack";
+	public static final String healPlayerEndpoint = "/heal";
+	public static final String spawnPlayerEndpoint = "/spawn";
+	public static final String worldStatePlayerEndpoint = "/worldstate";
+
 	private CurrentWorldState currentWorldState;
 	private CommandForwarder commandForwarder;
 	private LedgerController ledgerController;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PlayerEndpoints.class);
 
 	public PlayerEndpoints(CurrentWorldState currentWorldState, CommandForwarder commandForwarder, LedgerController ledgerController)
 	{
 		this.currentWorldState = currentWorldState;
 		this.commandForwarder = commandForwarder;
 		this.ledgerController = ledgerController;
+
+		LOGGER.info("Initialized Player Endpoints");
 	}
 
-	@PostMapping(path = "move")
+	@PostMapping(path = PlayerEndpoints.movePlayerEndpoint)
 	public void move(@RequestBody MoveCommandDTO moveCommandDTO)
 	{
 		ledgerController.startRunning();
@@ -56,7 +67,7 @@ public class PlayerEndpoints
 		// Send the command (if accepted) to other servers
 	}
 
-	@PostMapping(path = "heal")
+	@PutMapping(path = PlayerEndpoints.healPlayerEndpoint)
 	public void heal(@RequestBody HealCommandDTO healCommandDTO)
 	{
 		ledgerController.startRunning();
@@ -70,7 +81,7 @@ public class PlayerEndpoints
 		commandForwarder.forward(playerHealCommand);
 	}
 
-	@PostMapping(path = "attack")
+	@PutMapping(path = PlayerEndpoints.attackPlayerEndpoint)
 	public void attack(@RequestBody AttackCommandDTO attackCommandDTO)
 	{
 		ledgerController.startRunning();
@@ -84,7 +95,7 @@ public class PlayerEndpoints
 		commandForwarder.forward(playerAttackCommand);
 	}
 
-	@PostMapping(path = "spawn")
+	@PutMapping(path = PlayerEndpoints.spawnPlayerEndpoint)
 	public Unit spawn(@RequestBody SpawnCommandDTO spawnCommandDTO)
 	{
 		ledgerController.startRunning();
@@ -130,7 +141,7 @@ public class PlayerEndpoints
 		return null;
 	}
 
-	@PostMapping(path = "worldstate")
+	@GetMapping(path = PlayerEndpoints.worldStatePlayerEndpoint)
 	public WorldState worldState()
 	{
 		ledgerController.startRunning();

@@ -28,12 +28,17 @@ public class ServerEndpoints
 	private KnownServerList knownServerList;
 	private LedgerController ledgerController;
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServerEndpoints.class);
+
 	public ServerEndpoints(CurrentWorldState currentWorldState, LedgerExchangeRoundManager ledgerExchangeRoundManager, KnownServerList knownServerList, LedgerController ledgerController)
 	{
 		this.currentWorldState = currentWorldState;
 		this.ledgerExchangeRoundManager = ledgerExchangeRoundManager;
 		this.knownServerList = knownServerList;
 		this.ledgerController = ledgerController;
+
+		LOGGER.info("Initialized Server Endpoints");
+
 	}
 
 	@PostMapping(path = ServerEndpoints.ledgerExchangeEndpoint)

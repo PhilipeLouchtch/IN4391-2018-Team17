@@ -51,6 +51,7 @@ public class LedgerController implements Runnable
 	{
 		if (!isRunning())
 		{
+			LOG.info("Starting running ledger");
 			executorService.submit(this);
 		}
 	}

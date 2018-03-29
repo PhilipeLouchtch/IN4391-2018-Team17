@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
     <appender name="LE" class="com.logentries.logback.LogentriesAppender">
-        <Token>a275c82e-766d-481f-8d24-0c5fd34d7ccd</Token>
+        <Token>a275c82e-766d-481f-8d24-0c5fd34d7ccd MUST NOT WORK</Token>
         <Debug>False</Debug>
         <Ssl>False</Ssl>
         <facility>USER</facility>
