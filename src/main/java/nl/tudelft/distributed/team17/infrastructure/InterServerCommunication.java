@@ -41,7 +41,7 @@ public class InterServerCommunication
 	}
 
 	private final Object ledgerExchangeLock = new Object();
-	public List<Ledger> exchangeLedger(Ledger ledger)
+	public Ledger exchangeLedger(Ledger ledger)
 	{
 		// Todo: optimization, do not exchange with servers which already exchanged
 		synchronized (ledgerExchangeLock)
@@ -67,18 +67,16 @@ public class InterServerCommunication
 
 			try
 			{
-				List<Ledger> ledgers =  ledgerExchangeRoundManager.concludeRound(ledger.getGeneration()).stream()
-						.map(LedgerDto::toLedger)
-						.collect(Collectors.toList());
+				Ledger winner =  ledgerExchangeRoundManager.concludeRound(ledger.getGeneration());
 
-				return ledgers;
+				return winner;
 			}
 			catch (Exception ex)
 			{
 				LOG.error("Bugcheck: could not conclude round during exchangeLedger", ex);
-
+				throw new RuntimeException(ex);
 				// mem optimization: we know that only one object will be put into this list
-				return new ArrayList<>(1);
+//				return new ArrayList<>(1);
 			}
 		}
 	}

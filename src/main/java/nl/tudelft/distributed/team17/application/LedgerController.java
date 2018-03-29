@@ -18,6 +18,7 @@ public class LedgerController implements Runnable
 {
 	private final static Logger LOG = LoggerFactory.getLogger(LedgerController.class);
 
+	private static final long LEDGER_OPEN_INACTIVITY_PERIOD_BOUND = 5000;
 	private static final long LEDGER_OPEN_PERIOD_MS = 500;
 	private static final long LEDGER_STATUS_CHECK_PERIOD_MS = 10;
 
@@ -100,10 +101,9 @@ public class LedgerController implements Runnable
 			// Workaround for when there's only one server: need to let ledgerExchangeRoundManager know of our ledger or it will spazz out
 			Try.doing(() -> ledgerExchangeRoundManager.accept("THIS_SERVER", LedgerDto.from(ourLedger))).or(Rethrow.asRuntime());
 
-			List<Ledger> ledgers = interServerCommunication.exchangeLedger(ourLedger);
-			Ledger agreedLedger = ledgerConsensus.runConsensus(ledgers, ourLedger.getGeneration());
+			Ledger winner = interServerCommunication.exchangeLedger(ourLedger);
 
-			return agreedLedger;
+			return winner;
 		});
 
 		// A new ledger has been opened, so set the new open time

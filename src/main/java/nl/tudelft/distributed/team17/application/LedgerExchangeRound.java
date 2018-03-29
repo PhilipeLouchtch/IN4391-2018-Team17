@@ -10,13 +10,13 @@ public class LedgerExchangeRound
 {
 	private final static String THIS_SERVER = "Henk";
 	private final static ConcurrentMap<String, LedgerDto> ROUND_IS_CLOSED = null;
-	private final static LedgerDto NO_WINNING_LEDGERS = null;
+	private final static Ledger NO_WINNING_LEDGERS = null;
 
 	private int roundIdentifier;
 	private ConcurrentMap<String, LedgerDto> receivedLedgers;
-	private LedgerDto winningLedger;
+	private Ledger winningLedger;
 
-	private LedgerExchangeRound(int roundIdentifier, ConcurrentMap<String, LedgerDto> receivedLedgers, LedgerDto winningLedger)
+	private LedgerExchangeRound(int roundIdentifier, ConcurrentMap<String, LedgerDto> receivedLedgers, Ledger winningLedger)
 	{
 		this.roundIdentifier = roundIdentifier;
 		this.receivedLedgers = receivedLedgers;
@@ -38,14 +38,18 @@ public class LedgerExchangeRound
 		receivedLedgers.put(sourceId, ledgerDto);
 	}
 
-	public synchronized Collection<LedgerDto> closeRound() throws LedgerExchangeRoundIsClosedException
+	public synchronized void closeRound(Ledger winner) throws LedgerExchangeRoundIsClosedException
 	{
 		assertRoundIsActive();
 
-		Collection<LedgerDto> values = receivedLedgers.values();
-		receivedLedgers = ROUND_IS_CLOSED;
+		this.winningLedger = winner;
 
-		return values;
+		receivedLedgers = ROUND_IS_CLOSED;
+	}
+
+	public synchronized Collection<LedgerDto> received()
+	{
+		return receivedLedgers.values();
 	}
 
 	public boolean isClosed()
@@ -53,7 +57,7 @@ public class LedgerExchangeRound
 		return receivedLedgers == ROUND_IS_CLOSED;
 	}
 
-	public LedgerDto tryGetWinner()
+	public Ledger tryGetWinner()
 	{
 		if (!isClosed())
 		{

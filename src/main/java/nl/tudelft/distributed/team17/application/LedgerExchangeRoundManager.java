@@ -5,10 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LedgerExchangeRoundManager
@@ -18,8 +16,11 @@ public class LedgerExchangeRoundManager
 	/* RoundId --> Round{ ServerId -> Ledger } */
 	private final Map<Integer, LedgerExchangeRound> exchangeRounds;
 
-	private LedgerExchangeRoundManager()
+	private LedgerConsensus ledgerConsensus;
+
+	private LedgerExchangeRoundManager(LedgerConsensus ledgerConsensus)
 	{
+		this.ledgerConsensus = ledgerConsensus;
 		this.exchangeRounds = new HashMap<>();
 	}
 
@@ -37,7 +38,7 @@ public class LedgerExchangeRoundManager
 		}
 	}
 
-	public Collection<LedgerDto> concludeRound(int roundId) throws LedgerExchangeRound.LedgerExchangeRoundIsClosedException
+	public Ledger concludeRound(int roundId) throws LedgerExchangeRound.LedgerExchangeRoundIsClosedException
 	{
 		synchronized (exchangeRounds)
 		{
@@ -52,9 +53,12 @@ public class LedgerExchangeRoundManager
 		LedgerExchangeRound ledgerExchangeRound = getExistingOrCreateNewLedgerExchangeRound(roundId);
 		synchronized (ledgerExchangeRound)
 		{
-			Collection<LedgerDto> ledgersCollectedDuringRound = ledgerExchangeRound.closeRound();
+			List<Ledger> ledgersInRound = ledgerExchangeRound.received().stream().map(LedgerDto::toLedger).collect(Collectors.toList());
 
-			return ledgersCollectedDuringRound;
+			Ledger winner = ledgerConsensus.runConsensus(ledgersInRound, roundId);
+			ledgerExchangeRound.closeRound(winner);
+
+			return winner;
 		}
 	}
 
@@ -77,8 +81,8 @@ public class LedgerExchangeRoundManager
 			{
 				try
 				{
-					LedgerDto winner = ledgerExchangeRound.tryGetWinner();
-					return Optional.of(winner);
+					Ledger winner = ledgerExchangeRound.tryGetWinner();
+					return Optional.of(LedgerDto.from(winner));
 				}
 				catch (Exception ex)
 				{
