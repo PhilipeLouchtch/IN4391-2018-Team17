@@ -3,6 +3,7 @@ package nl.tudelft.distributed.team17.infrastructure;
 import nl.tudelft.distributed.team17.application.LedgerExchangeRoundManager;
 import nl.tudelft.distributed.team17.application.KnownServerList;
 import nl.tudelft.distributed.team17.application.Ledger;
+import nl.tudelft.distributed.team17.infrastructure.api.rest.ServerEndpoints;
 import nl.tudelft.distributed.team17.model.command.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,8 @@ public class InterServerCommunication
 			}
 
 			// Ignoring return value as the ledgers are put into the CurrentLedgerExchangeRound indirection layer
-			/* List<Future<LedgerDto>> futures = */ executeAsync(fns, EXCHANGE_LEDGERS_TX_TIMEOUT_MS);
+			/* List<Future<LedgerDto>> futures = */
+			executeAsync(fns, EXCHANGE_LEDGERS_TX_TIMEOUT_MS);
 
 			try
 			{
@@ -109,9 +111,8 @@ public class InterServerCommunication
 	private void exchangeLedgerWithServer(LedgerDto ledgerDto, String server)
 	{
 		// precache URI's in knownServerList maybe?
-		URI uriWithLocation = URI.create(server + "/ledger/");
+		URI uriWithLocation = URI.create(server + ServerEndpoints.ledgerExchangeEndpoint);
 
-		// todo: need to record success/failure so that consensus knows how long to wait for other ledgers, or maybe we just exchange Ledgers? How do we fight it out if parallel exchange happens?
 		try
 		{
 			LedgerDto receivedLedgerDto = restTemplate.postForObject(uriWithLocation, ledgerDto, LedgerDto.class);

@@ -1,5 +1,7 @@
 package nl.tudelft.distributed.team17.application;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.stream.Collectors;
 @Service
 public class LedgerConsensus
 {
+	private final static Logger LOG = LoggerFactory.getLogger(LedgerConsensus.class);
+
 	public LedgerConsensus()
 	{
 	}
@@ -55,7 +59,10 @@ public class LedgerConsensus
 		{
 			if (ledgerOne.getTieBreaker() == ledgerTwo.getTieBreaker())
 			{
-				throw new Error("Unrecoverable error: ledgers are both as-good and have same tie breaker, cannot pick!");
+				RuntimeException fatalException = new RuntimeException("Unrecoverable error: ledgers are both as-good and have same tie breaker, cannot pick!");
+				LOG.error("LedgerConsensus run into a critical error", fatalException);
+
+				throw fatalException;
 			}
 
 			if (ledgerOne.getTieBreaker() > ledgerTwo.getTieBreaker())

@@ -6,7 +6,9 @@ import nl.tudelft.distributed.team17.service.WorldStateGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayDeque;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * Wraps a world state and provides a single abstraction with which synchronous access to a WorldState can be made
@@ -16,13 +18,13 @@ public class CurrentWorldState
 {
 	private Ledger currentLedger;
 
-	private PriorityQueue<Command> priorityCommandsQueue;
+	private Queue<Command> priorityCommandsQueue;
 
 	@Autowired
 	public CurrentWorldState(WorldStateGenerator worldStateGenerator)
 	{
 		this.currentLedger = Ledger.genesis(worldStateGenerator.generateNewWorldState());
-		priorityCommandsQueue = new PriorityQueue<>();
+		priorityCommandsQueue = new ArrayDeque<>();
 	}
 
 	public synchronized void switchToNewAcceptedLedger(Ledger newlyAcceptedLedger)
@@ -78,11 +80,11 @@ public class CurrentWorldState
 			// todo: optimization, don't queue if the ledger only contains priority commands because in that case we can apply it directly
 			priorityCommandsQueue.add(command);
 		}
+		else
+		{
+			currentLedger.applyCommand(command);
+		}
 
-		// if ledger is being published then must wait on new accepted state before applying command,
-		// all other callers will be blocked anyway as one caller is waiting inside
-
-		currentLedger.applyCommand(command);
 	}
 
 	@FunctionalInterface
