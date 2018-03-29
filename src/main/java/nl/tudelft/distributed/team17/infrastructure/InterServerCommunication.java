@@ -90,7 +90,7 @@ public class InterServerCommunication
 		for(String server : knownServers)
 		{
 			// optimization: serialize only once
-			executorService.submit(() -> sendCommandToServer(server, command));
+			executorService.submit(() -> sendCommandToServer("http://" + server, command));
 		}
 	}
 
@@ -111,7 +111,7 @@ public class InterServerCommunication
 	private void exchangeLedgerWithServer(LedgerDto ledgerDto, String server)
 	{
 		// precache URI's in knownServerList maybe?
-		URI uriWithLocation = URI.create(server + ServerEndpoints.ledgerExchangeEndpoint);
+		URI uriWithLocation = URI.create("http://" + server + ServerEndpoints.ledgerExchangeEndpoint);
 
 		try
 		{
