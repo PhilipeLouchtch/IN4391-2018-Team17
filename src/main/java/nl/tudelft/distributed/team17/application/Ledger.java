@@ -89,6 +89,7 @@ public class Ledger
 		// Clone WorldState, so we always have an old, not changed copy
 		Cloner cloner = new Cloner();
 		WorldState copiedWorldState = cloner.deepClone(this.worldState);
+		copiedWorldState.updateWorldStateClock(); // we're switching ledgers so the world increases its clock
 
 		return new Ledger(this, copiedWorldState, generation, false, commandsAcceptedSoFar, roll);
 	}
@@ -137,7 +138,9 @@ public class Ledger
 	{
 		this.previous = losingLedger.previous;
 
-		if (!this.isGenesis())
+		// In first round a winning Ledger that came from a Dto is both a genesis and float, can only discern
+		// the generation we're in through looking at the losing ledger as it still has all references
+		if (!losingLedger.isGenesis())
 		{
 			WorldState startingWorldState = this.previous.worldState;
 			try
@@ -157,6 +160,11 @@ public class Ledger
 
 			// no longer need to keep this in memory, removing reference for GC
 			this.previous.worldState = null;
+		}
+		else
+		{
+			// If is Genesis, simply copy the ref to the initial worldState
+			this.worldState = losingLedger.worldState;
 		}
 	}
 
