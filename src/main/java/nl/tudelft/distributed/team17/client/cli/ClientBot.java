@@ -186,7 +186,7 @@ public class ClientBot implements Runnable
             }
             else
             {
-                LOGGER.info(String.format("[%s, %s]: Requesting worldState for first time", clientId, currentWorldState.getWorldStateClock()));
+                LOGGER.info(String.format("[%s, %s]: Requesting next worldState", clientId, currentWorldState.getWorldStateClock()));
             }
             try
             {
@@ -230,7 +230,7 @@ public class ClientBot implements Runnable
     private URI createUri(String endPointUrl)
     {
         URI uri = URI.create("http://" + serverAddress + endPointUrl);
-        LOGGER.trace(String.format("[%s]: Next call URI - %s, port - %s", clientId, uri.toString(), uri.getPort()));
+        LOGGER.trace(String.format("[%s]: Next call URI - %s", clientId, uri.toString()));
         return uri;
     }
 
