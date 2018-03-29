@@ -1,5 +1,7 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Optional;
 import java.util.Random;
 
@@ -8,6 +10,7 @@ public class Board
 	static final int BOARD_SIZE = 25;
 	static final Unit NO_UNIT_AT_LOCATION = null;
 
+	@JsonProperty("fields")
 	private Unit[][] fields;
 
 	private Board(int dimension)
