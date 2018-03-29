@@ -20,10 +20,17 @@ public class ClientCliApplication
 
     public void run()
     {
-        ClientBot clientBot = new ClientBot("10.0.0.3:80", "clientId0");
-        clientBot.run();
-        // new Thread(() ->
-        // {
-        // }).start();
+
+        for (int i = 0; i < 100; i++)
+        {
+            final int j = i;
+             new Thread(() ->
+             {
+                 String clientId = String.format("clientId%d", j);
+                ClientBot clientBot = new ClientBot("localhost:80", clientId);
+                clientBot.run();
+             }).start();
+        }
+
     }
 }

@@ -30,6 +30,11 @@ public class WorldState
 		this.worldStateClock = worldStateClock;
 	}
 
+	// JACKSON
+	private WorldState()
+	{
+	}
+
 	public synchronized boolean isUnitDead(String unitId)
 	{
 		Unit unit = units.getUnitOrThrow(unitId);

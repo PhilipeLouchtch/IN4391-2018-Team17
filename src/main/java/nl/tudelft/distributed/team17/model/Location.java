@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rits.cloning.Immutable;
 
 import java.util.ArrayList;
@@ -8,7 +9,9 @@ import java.util.List;
 @Immutable
 public class Location
 {
+	@JsonProperty("x")
 	private int x;
+	@JsonProperty("y")
 	private int y;
 
 	static public final Location INVALID_LOCATION = null;
@@ -17,6 +20,11 @@ public class Location
 	{
 		this.x = x;
 		this.y = y;
+	}
+
+	// JACKSON
+	private Location()
+	{
 	}
 
 	public int getX()
