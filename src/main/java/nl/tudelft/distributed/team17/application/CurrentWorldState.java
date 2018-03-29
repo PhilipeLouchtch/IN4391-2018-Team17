@@ -24,6 +24,10 @@ public class CurrentWorldState
 	public CurrentWorldState(WorldStateGenerator worldStateGenerator)
 	{
 		this.currentLedger = Ledger.genesis(worldStateGenerator.generateNewWorldState());
+
+		// Genesis does not get exchanged
+		this.currentLedger = this.currentLedger.makeNewHead();
+
 		priorityCommandsQueue = new ArrayDeque<>();
 	}
 

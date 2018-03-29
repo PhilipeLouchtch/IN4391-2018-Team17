@@ -19,7 +19,7 @@ public class LedgerController implements Runnable
 	private final static Logger LOG = LoggerFactory.getLogger(LedgerController.class);
 
 	private static final long LEDGER_OPEN_INACTIVITY_PERIOD_BOUND = 5000;
-	private static final long LEDGER_OPEN_PERIOD_MS = 500;
+	private static final long LEDGER_OPEN_PERIOD_MS = 2000;
 	private static final long LEDGER_STATUS_CHECK_PERIOD_MS = 10;
 
 	private static final Instant IS_NOT_RUNNING = null;

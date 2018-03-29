@@ -4,6 +4,7 @@ import com.rits.cloning.Cloner;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
 
+import java.time.Instant;
 import java.util.*;
 
 public class Ledger
@@ -11,7 +12,7 @@ public class Ledger
 	private static final Ledger NO_PREVIOUS = null;
 	private static final Random random = new Random();
 
-	boolean isClosed = false;
+	boolean isClosed;
 
 	private Ledger previous;
 
@@ -91,6 +92,8 @@ public class Ledger
 		WorldState copiedWorldState = cloner.deepClone(this.worldState);
 		copiedWorldState.updateWorldStateClock(); // we're switching ledgers so the world increases its clock
 
+		this.setClosed();
+
 		return new Ledger(this, copiedWorldState, generation, false, commandsAcceptedSoFar, roll);
 	}
 
@@ -155,7 +158,7 @@ public class Ledger
 			}
 			catch (Exception ex)
 			{
-				throw new Error("Fatal error: encountered an exception during application of newly accepted Ledger's commands on top of previous ledger", ex);
+				throw new RuntimeException("Fatal error: encountered an exception during application of newly accepted Ledger's commands on top of previous ledger", ex);
 			}
 
 			// no longer need to keep this in memory, removing reference for GC
@@ -163,8 +166,7 @@ public class Ledger
 		}
 		else
 		{
-			// If is Genesis, simply copy the ref to the initial worldState
-			this.worldState = losingLedger.worldState;
+			throw new RuntimeException("Fatal error: cannot replace a genesis ledger");
 		}
 	}
 

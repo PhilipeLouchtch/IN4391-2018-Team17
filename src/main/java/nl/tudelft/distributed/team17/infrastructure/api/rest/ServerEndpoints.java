@@ -61,7 +61,7 @@ public class ServerEndpoints
 			LOG.warn(String.format("Could not accept Ledger from [%s] due to error", serverId), ex);
 		}
 
-		final int TIMEOUT_IN_MS = 5000;
+		final int TIMEOUT_IN_MS = 30000;
 		final int PERIOD_IN_MS = 100;
 		for (int i = 0; i < TIMEOUT_IN_MS / PERIOD_IN_MS; i++)
 		{
