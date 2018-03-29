@@ -36,7 +36,7 @@ public class Bootstrapper implements Runnable
 		InetAddress localHost = Try.getting(InetAddress::getLocalHost).or(Rethrow.asRuntime());
 		byte[] address = localHost.getAddress();
 
-		LOG.info(String.format("Starting server at [%s]", String.valueOf(localHost.getHostAddress())));
+		LOG.info(String.format("Starting server at [%s]", localHost.getHostAddress()));
 		String serverAbove = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) + 1);
 		String serverBelow = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) - 1);
 

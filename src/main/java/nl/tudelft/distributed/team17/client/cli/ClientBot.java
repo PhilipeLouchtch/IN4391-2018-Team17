@@ -224,6 +224,7 @@ public class ClientBot implements Runnable
     private URI createUri(String endPointUrl)
     {
         URI uri = URI.create("http://" + serverAddress + endPointUrl);
+        LOGGER.trace(String.format("[%s]: Next call URI - %s, port - %s", clientId, uri.toString(), uri.getPort()));
         return uri;
     }
 

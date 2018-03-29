@@ -26,7 +26,7 @@ public class PlayerEndpoints
 	public static final String attackPlayerEndpoint = "/attack";
 	public static final String healPlayerEndpoint = "/heal";
 	public static final String spawnPlayerEndpoint = "/spawn";
-	public static final String worldStatePlayerEndpoint = "/worldstate";
+	public static final String worldStatePlayerEndpoint = "/world";
 
 	private CurrentWorldState currentWorldState;
 	private CommandForwarder commandForwarder;
@@ -146,6 +146,8 @@ public class PlayerEndpoints
 	{
 		ledgerController.startRunning();
 
-		return currentWorldState.getLastCheckpoint();
+		WorldState worldState = currentWorldState.getLastCheckpoint();
+		LOGGER.info(String.format("Sending worldstate %s", currentWorldState.getLastCheckpoint().getWorldStateClock()));
+		return worldState;
 	}
 }
