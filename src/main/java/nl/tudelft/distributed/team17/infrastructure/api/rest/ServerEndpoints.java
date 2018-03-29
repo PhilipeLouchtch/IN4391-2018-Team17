@@ -5,15 +5,13 @@ import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
 import nl.tudelft.distributed.team17.model.command.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping
@@ -96,6 +94,12 @@ public class ServerEndpoints
 		}
 
 		return new ArrayList<>(knownServerList.getKnownServers());
+	}
+
+	@GetMapping(path = "knownservers")
+	public Set<String> getKnownServers()
+	{
+		return knownServerList.getKnownServers();
 	}
 
 	@PostMapping(path = ServerEndpoints.serverForwardedCommandEndpoint)
