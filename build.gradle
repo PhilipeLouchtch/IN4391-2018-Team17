@@ -8,6 +8,7 @@ plugins {
 	id 'org.springframework.boot' version '1.5.10.RELEASE'
 	id 'java'
 	id 'idea'
+	id 'com.palantir.docker' version '0.19.2'
 }
 
 group = 'nl.tudelft.distributed.team17'
@@ -19,11 +20,21 @@ repositories {
 	maven { url 'https://jitpack.io' }
 }
 
+springBoot {
+	mainClass = 'nl.tudelft.distributed.team17.Application'
+}
+
+
 sourceSets {
 	main {
 		java {
-			srcDir 'src'
+			srcDir 'src/main/java'
 			exclude 'distributed'
+		}
+	}
+	test {
+		java {
+			srcDir 'src/test/java'
 		}
 	}
 }
@@ -32,6 +43,14 @@ idea {
 	module {
 		excludeDirs += file('src/main/java/distributed')
 	}
+}
+
+docker {
+    name 'IN4391-2018-team17-server'
+	tags 'latest'
+	dockerfile file('./src/docker/Dockerfile')
+
+	files tasks.bootRepackage.outputs
 }
 
 dependencies {

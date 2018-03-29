@@ -9,3 +9,6 @@ out/
 
 #ignore .impl
 *.iml
+
+*.class
+/build/
