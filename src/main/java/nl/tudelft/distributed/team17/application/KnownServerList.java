@@ -1,5 +1,7 @@
 package nl.tudelft.distributed.team17.application;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,8 @@ public class KnownServerList
 {
 	private Set<String> knownServers;
 	private String thisServer;
+
+	private static final Logger LOG = LoggerFactory.getLogger(KnownServerList.class);
 
 	@Autowired
 	public KnownServerList() throws UnknownHostException
@@ -35,7 +39,11 @@ public class KnownServerList
 	 */
 	public void acceptServer(String serverLocation)
 	{
-		knownServers.add(serverLocation.trim().intern());
+		String locationTrimmedInterned = serverLocation.trim().intern();
+		if(knownServers.add(locationTrimmedInterned))
+		{
+			LOG.info(String.format("Accepted server new %s", locationTrimmedInterned));
+		}
 	}
 
 	/**

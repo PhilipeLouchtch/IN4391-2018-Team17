@@ -6,6 +6,7 @@ import nl.tudelft.distributed.team17.infrastructure.api.rest.ServerEndpoints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.InetAddress;
@@ -35,7 +36,7 @@ public class Bootstrapper implements Runnable
 		InetAddress localHost = Try.getting(InetAddress::getLocalHost).or(Rethrow.asRuntime());
 		byte[] address = localHost.getAddress();
 
-		LOG.info(String.format("Starting server at [%s]", String.valueOf(localHost.getHostAddress())));
+		LOG.info(String.format("Starting server at [%s]", localHost.getHostAddress()));
 		String serverAbove = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) + 1);
 		String serverBelow = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) - 1);
 
@@ -50,13 +51,16 @@ public class Bootstrapper implements Runnable
 		{
 			for (URI uri : uris)
 			{
-
 				try
 				{
 					ArrayList<String> known = new ArrayList<>(knownServerList.getAllKnownServers());
 					ArrayList<String> arrayList = (ArrayList<String>) restTemplate.postForObject(uri, known, known.getClass());
 
 					arrayList.forEach(knownServerList::acceptServer);
+				}
+				catch (ResourceAccessException ex)
+				{
+					LOG.warn(String.format("Could not access server "));
 				}
 				catch (Exception ex)
 				{

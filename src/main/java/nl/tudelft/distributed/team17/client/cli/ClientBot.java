@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.client.cli;
 
+import nl.tudelft.distributed.team17.infrastructure.api.rest.PlayerEndpoints;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.AttackCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.HealCommandDTO;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.dto.MoveCommandDTO;
@@ -10,8 +11,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -33,7 +36,7 @@ public class ClientBot implements Runnable
         this.serverAddress = serverAddress;
         this.clientId = clientId;
         this.restTemplate = new RestTemplate();
-        LOGGER.info(String.format("[%s]: started", clientId));
+        LOGGER.info(String.format("[%s]: started talking to [%s]", clientId, serverAddress));
     }
 
     @Override
@@ -122,7 +125,7 @@ public class ClientBot implements Runnable
     {
         LOGGER.info(String.format("[%s, %s]: Attacking closest dragon [%s]", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
         AttackCommandDTO attackCommandDTO = new AttackCommandDTO(clientId, currentWorldState.getWorldStateClock(), dragon.getLocation());
-        makeRequest("attack", attackCommandDTO);
+        makeRequest(PlayerEndpoints.attackPlayerEndpoint, attackCommandDTO);
         LOGGER.info(String.format("[%s, %s]: Attacked closest dragon [%s]", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
     }
 
@@ -138,7 +141,7 @@ public class ClientBot implements Runnable
             {
                 LOGGER.info(String.format("[%s, %s]: Moving towards closest dragon [%s], direction [%s]", clientId, currentWorldState.getWorldStateClock(), dragon.getId(), direction));
                 MoveCommandDTO moveCommandDTO = new MoveCommandDTO(clientId, currentWorldState.getWorldStateClock(), direction);
-                makeRequest("move", moveCommandDTO);
+                makeRequest(PlayerEndpoints.movePlayerEndpoint, moveCommandDTO);
                 return;
             }
         }
@@ -150,7 +153,7 @@ public class ClientBot implements Runnable
         LOGGER.info(String.format("[%s, %s]: Healing player [%s]", clientId, currentWorldState.getWorldStateClock(), player.getId()));
         HealCommandDTO healCommandDTO =
                 new HealCommandDTO(clientId, currentWorldState.getWorldStateClock(), player.getLocation());
-        makeRequest("heal", healCommandDTO);
+        makeRequest(PlayerEndpoints.healPlayerEndpoint, healCommandDTO);
         LOGGER.info(String.format("[%s, %s]: Healed player [%s]", clientId, currentWorldState.getWorldStateClock(), player.getId()));
     }
 
@@ -158,7 +161,7 @@ public class ClientBot implements Runnable
     {
         LOGGER.info(String.format("[%s]: requesting spawning", clientId));
         SpawnCommandDTO spawnCommandDTO = new SpawnCommandDTO(clientId, currentWorldState.getWorldStateClock());
-        Unit unit = makeRequest(spawnCommandDTO, "spawn", Unit.class);
+        Unit unit = makeRequest(spawnCommandDTO, PlayerEndpoints.spawnPlayerEndpoint, Unit.class);
 
         if (unit == null)
         {
@@ -174,15 +177,36 @@ public class ClientBot implements Runnable
     // Returns true if client unit found in the returned worldState, false if not found in the returned worldState
     public boolean updateWorldState()
     {
-    	if (currentWorldState == null)
-	    {
-		    LOGGER.info(String.format("[%s, null]: Requesting worldState for first time", clientId));
-	    }
-	    else
-	    {
-		    LOGGER.info(String.format("[%s, %s]: Requesting worldState for first time", clientId, currentWorldState.getWorldStateClock()));
-	    }
-        WorldState worldState = makeRequest("worldstate", WorldState.class);
+	    WorldState worldState;
+	    while(true)
+        {
+            if (currentWorldState == null)
+            {
+                LOGGER.info(String.format("[%s, null]: Requesting worldState for first time", clientId));
+            }
+            else
+            {
+                LOGGER.info(String.format("[%s, %s]: Requesting worldState for first time", clientId, currentWorldState.getWorldStateClock()));
+            }
+            try
+            {
+                worldState = makeRequest(PlayerEndpoints.worldStatePlayerEndpoint, WorldState.class);
+            }
+            catch(ResourceAccessException reaEx)
+            {
+                if (currentWorldState == null)
+                {
+                    LOGGER.info(String.format("[%s, null]: Requesting worldState failed because server unavailable, retrying in 1s", clientId));
+                }
+                else
+                {
+                    LOGGER.info(String.format("[%s, %s]: Requesting worldState failed because server unavailable, retrying in 1s", clientId, currentWorldState.getWorldStateClock()));
+                }
+                sleep(1000);
+                continue;
+            }
+            break;
+        }
 
         LOGGER.info(String.format("[%s, %s]: Got worldState [%s]", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
         this.currentWorldState = worldState;
@@ -197,29 +221,31 @@ public class ClientBot implements Runnable
         return false;
     }
 
-    private String createUrl(String endPointUrl)
+    private URI createUri(String endPointUrl)
     {
-        return serverAddress + "/" + endPointUrl;
+        URI uri = URI.create("http://" + serverAddress + endPointUrl);
+        LOGGER.trace(String.format("[%s]: Next call URI - %s, port - %s", clientId, uri.toString(), uri.getPort()));
+        return uri;
     }
 
     private <T, E> T makeRequest(E requestBody, String endPoint, Class<T> responseType)
     {
         HttpEntity<E> request = new HttpEntity<>(requestBody);
         ResponseEntity<T> response =
-                restTemplate.exchange(createUrl(endPoint), HttpMethod.POST, request, responseType);
+                restTemplate.postForEntity(createUri(endPoint), request, responseType);
         T responseBody = response.getBody();
         return responseBody;
     }
 
     private <T> T makeRequest(String endPoint, Class<T> responseType)
     {
-        T responseBody = restTemplate.getForObject(createUrl(endPoint), responseType);
+        T responseBody = restTemplate.getForObject(createUri(endPoint), responseType);
         return responseBody;
     }
 
     private <E> void makeRequest(String endPoint, E requestBody)
     {
         HttpEntity<E> request = new HttpEntity<>(requestBody);
-        restTemplate.exchange(createUrl(endPoint), HttpMethod.PUT, request, Void.class);
+        restTemplate.put(createUri(endPoint), request);
     }
 }

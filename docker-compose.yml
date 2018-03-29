@@ -4,7 +4,7 @@ services:
     # replace username/repo:tag with your name and image details
     image: in4391-2018-team17-server
     deploy:
-      replicas: 5
+      replicas: 1
       resources:
         limits:
           cpus: "0.5"
@@ -13,6 +13,8 @@ services:
         condition: on-failure
     ports:
       - "80:80"
+    expose:
+      - "80"
     networks:
       - ds-nw
 networks:
