@@ -5,13 +5,11 @@ import net.coolicer.util.Try;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.ServerEndpoints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +34,7 @@ public class Bootstrapper implements Runnable
 	{
 		byte[] address = Try.getting(() -> InetAddress.getLocalHost().getAddress()).or(Rethrow.asRuntime());
 
-
+		LOG.info(String.format("Starting server at [%s]", String.valueOf(address)));
 		String serverAbove = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) + 1);
 		String serverBelow = String.format("%d.%d.%d.%d", address[0]& 0xFF, address[1] & 0xFF, address[2]& 0xFF, (address[3] & 0xFF) - 1);
 
