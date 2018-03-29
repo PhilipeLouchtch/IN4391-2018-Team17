@@ -2,6 +2,7 @@ package nl.tudelft.distributed.team17.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -23,7 +24,19 @@ public class UnitsInWorld
 
     public Optional<Unit> findUnit(String unitId)
     {
-        return Optional.of(units.get(unitId));
+        return Optional.ofNullable(units.get(unitId));
+    }
+
+    public Optional<Unit> findPlayerUnit(String unitId)
+    {
+        Unit unit = units.get(unitId);
+
+        if (unit == null || unit.getUnitType() == UnitType.DRAGON)
+        {
+            return Optional.empty();
+        }
+
+        return Optional.of(unit);
     }
 
     public Unit getUnitOrThrow(String unitId)

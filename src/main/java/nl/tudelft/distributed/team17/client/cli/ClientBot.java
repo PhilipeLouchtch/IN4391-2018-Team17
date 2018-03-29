@@ -75,8 +75,10 @@ public class ClientBot implements Runnable
         {
             TimeUnit.MILLISECONDS.sleep(miliseconds);
         }
-        catch(InterruptedException e)
+        catch(InterruptedException ex)
         {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(ex);
         }
     }
 
@@ -140,7 +142,7 @@ public class ClientBot implements Runnable
                 return;
             }
         }
-        LOGGER.info(String.format(String.format("[%s, %s]: Can't move towards closest dragon [%s], paths are blocked", clientId, currentWorldState.getWorldStateClock(), dragon.getId())));
+        LOGGER.info(String.format("[%s, %s]: Can't move towards closest dragon [%s], paths are blocked", clientId, currentWorldState.getWorldStateClock(), dragon.getId()));
     }
 
     private void performHealPlayerAction(Unit player)
@@ -155,10 +157,17 @@ public class ClientBot implements Runnable
     private Unit spawn()
     {
         LOGGER.info(String.format("[%s]: requesting spawning", clientId));
-        SpawnCommandDTO spawnCommandDTO = new SpawnCommandDTO(clientId);
+        SpawnCommandDTO spawnCommandDTO = new SpawnCommandDTO(clientId, currentWorldState.getWorldStateClock());
         Unit unit = makeRequest(spawnCommandDTO, "spawn", Unit.class);
+
+        if (unit == null)
+        {
+            LOGGER.info(String.format(("[%s]: could not spawn, attempting another try"), clientId));
+            unit = spawn();
+        }
+
         Location location = unit.getLocation();
-        LOGGER.info(String.format(("[%s]: spawned on (%i,%i)"), clientId, location.getX(), location.getY()));
+        LOGGER.info(String.format(("[%s]: spawned on (%d,%d)"), clientId, location.getX(), location.getY()));
         return unit;
     }
 
@@ -169,11 +178,14 @@ public class ClientBot implements Runnable
         WorldState worldState = makeRequest("worldstate", WorldState.class);
         LOGGER.info(String.format("[%s, %s]: Got worldState [%s]", clientId, currentWorldState.getWorldStateClock(), worldState.getWorldStateClock()));
         this.currentWorldState = worldState;
-        if(worldState.playerUnitInGame(clientId))
+
+        Optional<Unit> playerUnit = worldState.findPlayerUnit(clientId);
+        if(playerUnit.isPresent())
         {
-            this.clientUnit = worldState.getPlayerUnit(clientId);
+            this.clientUnit = playerUnit.get();
             return true;
         }
+
         return false;
     }
 

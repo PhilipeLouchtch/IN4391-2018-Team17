@@ -7,9 +7,13 @@ public class SpawnCommandDTO
     @JsonProperty("emailAddress")
     private String emailAddress;
 
-    public SpawnCommandDTO(String emailAddress)
+    @JsonProperty("clock")
+    private Integer clock;
+
+    public SpawnCommandDTO(String emailAddress, Integer clock)
     {
         this.emailAddress = emailAddress;
+        this.clock = clock;
     }
 
     // Jackson
@@ -20,5 +24,10 @@ public class SpawnCommandDTO
     public String getEmailAddress()
     {
         return emailAddress;
+    }
+
+    public Integer getClock()
+    {
+        return clock;
     }
 }

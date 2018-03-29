@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.model;
 
+import java.util.Optional;
 import java.util.Random;
 
 public class Board
@@ -66,22 +67,30 @@ public class Board
 		return fields[location.getX()][location.getY()];
 	}
 
-	public synchronized Unit placeUnitOnRandomEmptyLocation(Random random, Unit unit )
+	public synchronized Optional<Unit> placeUnitOnRandomEmptyLocation(Random random, Unit unit)
 	{
 		int x;
 		int y;
 		Location location;
 
-		do
+		final int MAX_ATTEMPTS = 20;
+
+		for (int i = 0; i < MAX_ATTEMPTS; i++)
 		{
 			x = random.nextInt(BOARD_SIZE);
 			y = random.nextInt(BOARD_SIZE);
 			location = new Location(x, y);
-		} while(!isLocationOccupied(location));
 
-		Unit placedUnit = unit.placed(location);
-		setAt(location, unit);
-		return placedUnit;
+			if (!isLocationOccupied(location))
+			{
+				Unit placedUnit = unit.placed(location);
+				setAt(location, unit);
+
+				return Optional.of(placedUnit);
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	private void assertNotOccupied(Location newLocation)

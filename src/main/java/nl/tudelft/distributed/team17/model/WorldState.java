@@ -10,8 +10,10 @@ public class WorldState
 {
 	@JsonProperty("boards")
 	private Board board;
+
 	@JsonProperty("units")
 	private UnitsInWorld units;
+
 	@JsonProperty("worldStateClock")
 	private Integer worldStateClock;
 
@@ -86,12 +88,16 @@ public class WorldState
 		}
 	}
 
-	public synchronized Unit spawnUnit(String unitId, UnitType unitType)
+	public synchronized Optional<Unit> spawnUnit(String unitId, UnitType unitType)
 	{
+		// ensure that randomness is determinisitc
 		Random random = new Random(unitId.hashCode());
-		Unit spawnedUnit = Unit.constructRandomUnit(random, unitId, unitType);
-		spawnedUnit = board.placeUnitOnRandomEmptyLocation(random, spawnedUnit);
-		units.addUnit(spawnedUnit);
+
+		Unit createdUnit = Unit.constructRandomUnit(random, unitId, unitType);
+		Optional<Unit> spawnedUnit = board.placeUnitOnRandomEmptyLocation(random, createdUnit);
+
+		spawnedUnit.ifPresent(units::addUnit);
+
 		return spawnedUnit;
 	}
 
@@ -123,10 +129,9 @@ public class WorldState
 		}
 	}
 
-	public Unit getPlayerUnit(String playerId)
+	public Optional<Unit> findPlayerUnit(String playerId)
 	{
-		Unit player = units.getPlayerUnitOrThrow(playerId);
-		return player;
+		return units.findPlayerUnit(playerId);
 	}
 
 	public boolean playerUnitInGame(String playerId)
