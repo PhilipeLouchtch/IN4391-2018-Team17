@@ -90,13 +90,13 @@ public class InterServerCommunication
 		for(String server : knownServers)
 		{
 			// optimization: serialize only once
-			executorService.submit(() -> sendCommandToServer("http://" + server + ServerEndpoints.serverForwardedCommandEndpoint, command));
+			executorService.submit(() -> sendCommandToServer(server, command));
 		}
 	}
 
 	private void sendCommandToServer(String server, Command command)
 	{
-		URI uriWithLocation = URI.create(server + "/command/");
+		URI uriWithLocation = URI.create("http://" + server + ServerEndpoints.serverForwardedCommandEndpoint);
 
 		try
 		{
