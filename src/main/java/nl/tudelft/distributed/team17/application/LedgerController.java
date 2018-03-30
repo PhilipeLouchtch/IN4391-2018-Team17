@@ -76,7 +76,7 @@ public class LedgerController implements Runnable
 		}
 	}
 
-	private void handleLedgerOpenTimeoutIfOccurred()
+	private synchronized void handleLedgerOpenTimeoutIfOccurred()
 	{
 		long msBetweenOpenAndNow = getMsBetweenOpenAndNow();
 		if (msBetweenOpenAndNow >= LEDGER_OPEN_PERIOD_MS)
