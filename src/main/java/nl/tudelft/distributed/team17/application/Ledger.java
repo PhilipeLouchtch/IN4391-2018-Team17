@@ -6,7 +6,6 @@ import nl.tudelft.distributed.team17.model.command.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.*;
 
 public class Ledger
@@ -98,7 +97,7 @@ public class Ledger
 		// Clone WorldState, so we always have an old, not changed copy
 		Cloner cloner = new Cloner();
 		WorldState copiedWorldState = cloner.deepClone(this.worldState);
-		copiedWorldState.updateWorldStateClock(); // we're switching ledgers so the world increases its clock
+		copiedWorldState.incrementClock(); // we're switching ledgers so the world increases its clock
 
 		this.setClosed();
 
@@ -127,7 +126,7 @@ public class Ledger
 			commands.add(command);
 			command.apply(this.worldState);
 			commandsAcceptedSoFar++;
-			this.worldState.updateWorldStateClock();
+			this.worldState.incrementClock();
 		}
 		catch (Exception ex)
 		{

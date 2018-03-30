@@ -51,6 +51,8 @@ public class WorldState
 
 		Unit movedUnit = unit.moved(direction);
 		swapUnits(unit, movedUnit);
+
+		incrementClock();
 	}
 
 	public synchronized void healPlayer(String playerId, Location locationToHeal)
@@ -66,8 +68,9 @@ public class WorldState
 
 		Unit unitToHeal = board.getAt(locationToHeal);
 		Unit healedUnit = unitToHeal.incurHeal(unit.getAttackPower());
-
 		swapUnits(unitToHeal, healedUnit);
+
+		incrementClock();
 	}
 
 	public synchronized void damageUnit(String attackerId, Location locationToAttack)
@@ -100,6 +103,8 @@ public class WorldState
 		{
 			swapUnits(unitToAttack, attackedUnit);
 		}
+
+		incrementClock();
 	}
 
 	public synchronized Optional<Unit> spawnUnit(String unitId, UnitType unitType)
@@ -111,6 +116,7 @@ public class WorldState
 		Optional<Unit> spawnedUnit = board.placeUnitOnRandomEmptyLocation(random, createdUnit);
 
 		spawnedUnit.ifPresent(units::addUnit);
+		incrementClock();
 
 		return spawnedUnit;
 	}
@@ -185,7 +191,7 @@ public class WorldState
 		return units.anyDragonLeft();
 	}
 
-	public void updateWorldStateClock()
+	public void incrementClock()
 	{
 		worldStateClock++;
 	}
