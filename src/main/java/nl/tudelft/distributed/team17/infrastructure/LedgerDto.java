@@ -63,4 +63,20 @@ public class LedgerDto
 	private LedgerDto()
 	{
 	}
+
+	private String commandsToString()
+	{
+		return "{size=" + commands.size() + "}";
+	}
+
+	@Override
+	public String toString()
+	{
+		return "LedgerDto{" +
+				"commands=" + commandsToString() +
+				", commandsAcceptedByLedgerChain=" + commandsAcceptedByLedgerChain +
+				", generation=" + generation +
+				", tieBreaker=" + tieBreaker +
+				'}';
+	}
 }

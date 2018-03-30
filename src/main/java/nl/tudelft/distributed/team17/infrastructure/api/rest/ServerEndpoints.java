@@ -44,7 +44,7 @@ public class ServerEndpoints
 	@PostMapping(path = ServerEndpoints.ledgerExchangeEndpoint)
 	public LedgerDto exchangeLedgers(@RequestBody LedgerDto ledgerAsDto, HttpServletRequest request)
 	{
-		LOG.info("Received a Ledger Exchange request from {}, with ledger@#{}", request.getRemoteHost(), ledgerAsDto.getCommandsAcceptedByLedgerChain());
+		LOG.info("Received a Ledger Exchange request from {}, with ledger@#{}\n{}", request.getRemoteHost(), ledgerAsDto.getCommandsAcceptedByLedgerChain(), ledgerAsDto.toString());
 
 		ledgerController.startRunning();
 
