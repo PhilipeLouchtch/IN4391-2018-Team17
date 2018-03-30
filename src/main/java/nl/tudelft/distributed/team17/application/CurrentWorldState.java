@@ -64,13 +64,9 @@ public class CurrentWorldState
 
 	private void doSwitchoverToAcceptedLedger(Ledger newlyAcceptedLedger)
 	{
-		// todo: check if need to migrate queued commands or missing messages?
-		Ledger previouslyCurrentLedger = currentLedger;
+		newlyAcceptedLedger.replace(currentLedger);
 
-		currentLedger = newlyAcceptedLedger;
-		currentLedger.replace(previouslyCurrentLedger);
-
-		Ledger newHead = currentLedger.makeNewHead();
+		Ledger newHead = newlyAcceptedLedger.makeNewHead();
 		currentLedger = newHead;
 	}
 
