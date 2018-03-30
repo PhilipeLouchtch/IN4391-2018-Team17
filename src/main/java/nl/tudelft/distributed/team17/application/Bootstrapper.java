@@ -62,7 +62,7 @@ public class Bootstrapper implements Runnable
 				}
 				catch (ResourceAccessException ex)
 				{
-					LOG.warn(String.format("Could not access server "));
+					LOG.warn("Could not access server ");
 				}
 				catch (Exception ex)
 				{
