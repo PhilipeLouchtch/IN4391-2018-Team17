@@ -47,14 +47,16 @@ public class WorldState
 	public synchronized void movePlayer(String playerId, Direction direction)
 	{
 		Unit unit = units.getPlayerUnitOrThrow(playerId);
-		Unit movedUnit = unit.moved(direction);
+		assertUnitIsAlive(unit);
 
+		Unit movedUnit = unit.moved(direction);
 		swapUnits(unit, movedUnit);
 	}
 
 	public synchronized void healPlayer(String playerId, Location locationToHeal)
 	{
 		Unit unit = units.getPlayerUnitOrThrow(playerId);
+		assertUnitIsAlive(unit);
 
 		int distance = unit.getLocation().maxDistanceTo(locationToHeal);
 		if (distance > 5)
@@ -71,6 +73,8 @@ public class WorldState
 	public synchronized void damageUnit(String attackerId, Location locationToAttack)
 	{
 		Unit attacker = units.getUnitOrThrow(attackerId);
+		assertUnitIsAlive(attacker);
+
 		int distance = attacker.getLocation().maxDistanceTo(locationToAttack);
 		if (distance > 2)
 		{
@@ -84,6 +88,8 @@ public class WorldState
 
 	public synchronized void damageUnit(Unit attacker, Unit unitToAttack)
 	{
+		assertUnitIsAlive(attacker);
+
 		Unit attackedUnit = unitToAttack.incurDamage(attacker.getAttackPower());
 
 		if(attackedUnit.isDead())
@@ -134,6 +140,15 @@ public class WorldState
 		{
 			String message = String.format("Unit ids do not match, was: [%s] and [%s]", unitOne.getId(), unitTwo.getId());
 			throw new IllegalArgumentException(message);
+		}
+	}
+
+	private void assertUnitIsAlive(Unit unit)
+	{
+		if (unit.isDead())
+		{
+			String msg = String.format("Cannot complete requested action, unit is dead (unit was: [%s])", unit.getId());
+			throw new IllegalStateException(msg);
 		}
 	}
 
