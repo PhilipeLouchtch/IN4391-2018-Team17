@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-    <appender name="LE" class="com.logentries.logback.LogentriesAppender">
-        <Token>a275c82e-766d-481f-8d24-0c5fd34d7ccd MUST NOT WORK</Token>
-        <Debug>False</Debug>
-        <Ssl>False</Ssl>
-        <facility>USER</facility>
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger{25} - %msg%n</pattern>
-        </encoder>
-    </appender>
+    <!--<appender name="LE" class="com.logentries.logback.LogentriesAppender">-->
+        <!--<Token>a275c82e-766d-481f-8d24-0c5fd34d7ccd MUST NOT WORK</Token>-->
+        <!--<Debug>False</Debug>-->
+        <!--<Ssl>False</Ssl>-->
+        <!--<facility>USER</facility>-->
+        <!--<encoder>-->
+            <!--<pattern>%d{HH:mm:ss.SSS} [%thread] %level %logger{25} - %msg%n</pattern>-->
+        <!--</encoder>-->
+    <!--</appender>-->
     <appender name="colorAppender" class="ch.qos.logback.core.ConsoleAppender">
         <layout class="ch.qos.logback.classic.PatternLayout">
             <pattern>%d{HH:mm:ss.SSS} %green([%thread]) %highlight(%level) %logger{25} - %msg%n</pattern>
@@ -16,7 +16,7 @@
     </appender>
     <logger name="nl.tudelft.distributed.team17" level="TRACE"/>
     <root level="OFF">
-        <appender-ref ref="LE" />
+        <!--<appender-ref ref="LE" />-->
         <appender-ref ref="colorAppender" />
     </root>
 </configuration>
