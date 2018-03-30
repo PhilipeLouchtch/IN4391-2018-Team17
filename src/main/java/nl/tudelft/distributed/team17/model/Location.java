@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rits.cloning.Immutable;
 
@@ -23,6 +24,7 @@ public class Location
 	}
 
 	// JACKSON
+	@JsonCreator
 	private Location()
 	{
 	}
