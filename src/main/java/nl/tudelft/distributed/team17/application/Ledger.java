@@ -3,12 +3,16 @@ package nl.tudelft.distributed.team17.application;
 import com.rits.cloning.Cloner;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.*;
 
 public class Ledger
 {
+	private final static Logger LOG = LoggerFactory.getLogger(Ledger.class);
+
 	private static final Ledger NO_PREVIOUS = null;
 	private static final Random random = new Random();
 
@@ -127,6 +131,7 @@ public class Ledger
 				Although we do the checks before modifying it, so 99.9999% exceptions will not mean
 			    that the world state has been modified or is in inconsistent state
 			 */
+			LOG.error("Could not apply command to Ledger", ex);
 			commands = playerCommandsBeforeApply;
 			throw ex;
 		}
