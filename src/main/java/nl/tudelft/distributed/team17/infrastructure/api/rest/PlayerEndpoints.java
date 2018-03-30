@@ -13,6 +13,7 @@ import nl.tudelft.distributed.team17.model.command.PlayerHealCommand;
 import nl.tudelft.distributed.team17.model.command.PlayerMoveCommand;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.PlayerSpawnCommand;
+import nl.tudelft.distributed.team17.util.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -116,15 +117,8 @@ public class PlayerEndpoints
 
 		while (numWorldStateChangesWaited < 2)
 		{
-			try
-			{
-				Thread.sleep(100);
-			}
-			catch (InterruptedException ex)
-			{
-				Thread.currentThread().interrupt();
-				throw new RuntimeException(ex);
-			}
+			final int SLEEP_TIME_MS = 100;
+			Sleep.forMilis(SLEEP_TIME_MS);
 
 			Integer worldStateClock = currentWorldState.getLastCheckpoint().getWorldStateClock();
 			if (worldStateClock > worldStateClockBeginWait)

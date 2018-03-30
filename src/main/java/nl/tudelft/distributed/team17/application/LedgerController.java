@@ -4,6 +4,7 @@ import net.coolicer.functional.actions.Rethrow;
 import net.coolicer.util.Try;
 import nl.tudelft.distributed.team17.infrastructure.InterServerCommunication;
 import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
+import nl.tudelft.distributed.team17.util.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -63,16 +64,8 @@ public class LedgerController implements Runnable
 		ledgerOpenedAtInstant = Instant.now();
 		while(true)
 		{
-			try
-			{
-				Thread.sleep(LEDGER_STATUS_CHECK_PERIOD_MS);
-				handleLedgerOpenTimeoutIfOccurred();
-			}
-			catch (InterruptedException ex)
-			{
-				Thread.currentThread().interrupt();
-				throw new RuntimeException(ex);
-			}
+			Sleep.forMilis(LEDGER_STATUS_CHECK_PERIOD_MS);
+			handleLedgerOpenTimeoutIfOccurred();
 		}
 	}
 

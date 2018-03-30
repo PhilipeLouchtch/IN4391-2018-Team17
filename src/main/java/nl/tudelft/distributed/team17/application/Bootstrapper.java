@@ -3,6 +3,7 @@ package nl.tudelft.distributed.team17.application;
 import net.coolicer.functional.actions.Rethrow;
 import net.coolicer.util.Try;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.ServerEndpoints;
+import nl.tudelft.distributed.team17.util.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.List;
 public class Bootstrapper implements Runnable
 {
 	private static final Logger LOG = LoggerFactory.getLogger(Bootstrapper.class);
+	public static final int CHECK_PERIOD_MS = 1000;
 
 	private LedgerController ledgerController;
 	private RestTemplate restTemplate;
@@ -68,15 +70,7 @@ public class Bootstrapper implements Runnable
 				}
 			}
 
-			try
-			{
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException ex)
-			{
-				Thread.currentThread().interrupt();
-				throw new RuntimeException();
-			}
+			Sleep.forMilis(CHECK_PERIOD_MS);
 		}
 	}
 }

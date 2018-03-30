@@ -3,6 +3,7 @@ package nl.tudelft.distributed.team17.infrastructure.api.rest;
 import nl.tudelft.distributed.team17.application.*;
 import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
 import nl.tudelft.distributed.team17.model.command.Command;
+import nl.tudelft.distributed.team17.util.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -67,15 +68,7 @@ public class ServerEndpoints
 		{
 			Optional<LedgerDto> winnerOfRound = ledgerExchangeRoundManager.getWinnerOfRound(generationOfLedger);
 
-			try
-			{
-				Thread.sleep(PERIOD_IN_MS);
-			}
-			catch (InterruptedException ex)
-			{
-				Thread.currentThread().interrupt();
-				throw new RuntimeException(ex);
-			}
+			Sleep.forMilis(PERIOD_IN_MS);
 
 			if (winnerOfRound.isPresent())
 			{
