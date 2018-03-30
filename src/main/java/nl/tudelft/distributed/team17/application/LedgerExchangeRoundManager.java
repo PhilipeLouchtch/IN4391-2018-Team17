@@ -35,6 +35,10 @@ public class LedgerExchangeRoundManager
 			{
 				ledgerExchangeRound.accept(serverId, ledgerDto);
 			}
+			else
+			{
+				LOG.warn("Could not accept Ledger (from [{}], round [{}]), round is closed", serverId, roundId);
+			}
 		}
 	}
 
@@ -86,7 +90,7 @@ public class LedgerExchangeRoundManager
 				}
 				catch (Exception ex)
 				{
-					LOG.debug("Failed to get winning ledger", ex);
+					LOG.warn("Failed to get winning ledger", ex);
 					return Optional.empty();
 				}
 			}

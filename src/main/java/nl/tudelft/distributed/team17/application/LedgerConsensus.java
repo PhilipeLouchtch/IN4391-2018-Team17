@@ -19,6 +19,14 @@ public class LedgerConsensus
 
 	public Ledger runConsensus(List<Ledger> ledgers, int generationToRunFor)
 	{
+		LOG.info("Starting Consensus determination for round [{}], with [{}] ledgers", generationToRunFor, ledgers.size());
+
+		LOG.debug("Received the following Ledgers:");
+		if (LOG.isDebugEnabled())
+		{
+			ledgers.forEach(ledger -> LOG.debug(ledger.toString()));
+		}
+
 		Ledger bestLedger = ledgers.stream()
 				.filter(ledger -> ledger.getGeneration() == generationToRunFor)
 				.reduce(null, this::pickBest);

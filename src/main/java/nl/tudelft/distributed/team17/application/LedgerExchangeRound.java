@@ -12,6 +12,8 @@ import java.util.concurrent.ConcurrentMap;
 
 public class LedgerExchangeRound
 {
+	private final static Logger LOG = LoggerFactory.getLogger(LedgerExchangeRound.class);
+
 	private final static String THIS_SERVER = "Henk";
 	private final static Map<String, LedgerDto> ROUND_IS_CLOSED = null;
 	private final static Ledger NO_WINNING_LEDGERS = null;
@@ -41,6 +43,8 @@ public class LedgerExchangeRound
 		assertRoundIsActive();
 		assertLedgerCanBeAccepted(ledgerDto);
 
+		LOG.info("Accepting Ledger (from [{}]), round [{}]) into round [{}]", sourceId, ledgerDto.getGeneration(), roundIdentifier);
+
 		receivedLedgers.put(sourceId, ledgerDto);
 	}
 
@@ -49,6 +53,13 @@ public class LedgerExchangeRound
 		assertRoundIsActive();
 
 		this.winningLedger = winner;
+
+		// find the sourceId of the winner for logging purposes
+		Map.Entry<String, LedgerDto> winnerEntry = receivedLedgers.entrySet().stream()
+				.filter(stringLedgerDtoEntry -> stringLedgerDtoEntry.getValue().getTieBreaker() == winner.getTieBreaker())
+				.findAny().get();
+
+		LOG.info("Closing round [{}], winning Ledger is (from [{}], #commands [{}])", roundIdentifier, winnerEntry.getKey(), winner.getCommands().size());
 
 		receivedLedgers = ROUND_IS_CLOSED;
 	}

@@ -55,6 +55,7 @@ public class ServerEndpoints
 
 		try
 		{
+			LOG.info("Passing Ledger (from [{}], round [{}]) to round manager", serverId, generationOfLedger);
 			ledgerExchangeRoundManager.accept(serverId, ledgerAsDto);
 		}
 		catch (Exception ex)

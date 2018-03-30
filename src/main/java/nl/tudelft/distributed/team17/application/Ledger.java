@@ -211,4 +211,16 @@ public class Ledger
 	{
 		return Collections.unmodifiableList(commands);
 	}
+
+	@Override
+	public String toString()
+	{
+		return "Ledger{" +
+				"isClosed=" + isClosed +
+				", generation=" + generation +
+				", #commands=" + commands.size() +
+				", commandsAcceptedSoFar=" + commandsAcceptedSoFar +
+				", tieBreaker=" + tieBreaker +
+				'}';
+	}
 }
