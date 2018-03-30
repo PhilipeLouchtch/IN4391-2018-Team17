@@ -62,13 +62,11 @@ public class InterServerCommunication
 			}
 
 			// Ignoring return value as the ledgers are put into the CurrentLedgerExchangeRound indirection layer
-			/* List<Future<LedgerDto>> futures = */
 			executeAsync(fns, EXCHANGE_LEDGERS_TX_TIMEOUT_MS);
 
 			try
 			{
 				Ledger winner =  ledgerExchangeRoundManager.concludeRound(ledger.getGeneration());
-
 				return winner;
 			}
 			catch (Exception ex)
@@ -114,7 +112,7 @@ public class InterServerCommunication
 		try
 		{
 			LedgerDto receivedLedgerDto = restTemplate.postForObject(uriWithLocation, ledgerDto, LedgerDto.class);
-			ledgerExchangeRoundManager.accept(server, ledgerDto);
+			ledgerExchangeRoundManager.accept(server, receivedLedgerDto);
 		}
 		catch (Exception ex)
 		{
