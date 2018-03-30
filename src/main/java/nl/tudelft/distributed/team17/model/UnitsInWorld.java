@@ -1,5 +1,6 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
@@ -17,6 +18,7 @@ public class UnitsInWorld
     }
 
     // JACKSON
+    @JsonCreator
     private UnitsInWorld()
     {
     }
