@@ -68,11 +68,15 @@ public class Ledger
 	 * @param tieBreaker The tie-breaker number generated for the Ledger
 	 * @return A newly constructed Ledger without a link to a previous Ledger in the chain
 	 */
-	public static Ledger makeFloating(int generation, int commandsAcceptedSoFar, int tieBreaker)
+	public static Ledger makeFloating(List<Command> commands, int generation, int commandsAcceptedSoFar, int tieBreaker)
 	{
 		final boolean IS_CLOSED = true;
 		final WorldState NO_WORLDSTATE = null;
-		return new Ledger(NO_PREVIOUS, NO_WORLDSTATE, generation, IS_CLOSED, commandsAcceptedSoFar, tieBreaker);
+
+		Ledger ledger = new Ledger(NO_PREVIOUS, NO_WORLDSTATE, generation, IS_CLOSED, commandsAcceptedSoFar, tieBreaker);
+		ledger.commands = commands;
+
+		return ledger;
 	}
 
 	public synchronized WorldState getLastAcceptedWorldState()

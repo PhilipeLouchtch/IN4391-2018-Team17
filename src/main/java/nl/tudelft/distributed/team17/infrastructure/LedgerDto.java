@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.application.Ledger;
 import nl.tudelft.distributed.team17.model.command.Command;
 
+import java.util.Collections;
 import java.util.List;
 
 public class LedgerDto
@@ -36,7 +37,7 @@ public class LedgerDto
 
 	public List<Command> getCommands()
 	{
-		return commands;
+		return Collections.unmodifiableList(commands);
 	}
 
 	public int getCommandsAcceptedByLedgerChain()
@@ -56,7 +57,7 @@ public class LedgerDto
 
 	public Ledger toLedger()
 	{
-		return Ledger.makeFloating(generation, commandsAcceptedByLedgerChain, tieBreaker);
+		return Ledger.makeFloating(commands, generation, commandsAcceptedByLedgerChain, tieBreaker);
 	}
 
 	// For Jackson
