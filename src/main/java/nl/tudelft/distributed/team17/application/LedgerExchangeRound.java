@@ -1,33 +1,39 @@
 package nl.tudelft.distributed.team17.application;
 
 import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 public class LedgerExchangeRound
 {
 	private final static String THIS_SERVER = "Henk";
-	private final static ConcurrentMap<String, LedgerDto> ROUND_IS_CLOSED = null;
+	private final static Map<String, LedgerDto> ROUND_IS_CLOSED = null;
 	private final static Ledger NO_WINNING_LEDGERS = null;
 
 	private int roundIdentifier;
-	private ConcurrentMap<String, LedgerDto> receivedLedgers;
+	private Map<String, LedgerDto> receivedLedgers;
 	private Ledger winningLedger;
 
-	private LedgerExchangeRound(int roundIdentifier, ConcurrentMap<String, LedgerDto> receivedLedgers, Ledger winningLedger)
+	private LedgerExchangeRound(int roundIdentifier, Map<String, LedgerDto> receivedLedgers, Ledger winningLedger)
 	{
 		this.roundIdentifier = roundIdentifier;
 		this.receivedLedgers = receivedLedgers;
 		this.winningLedger = winningLedger;
 	}
 
-	public static LedgerExchangeRound createRound(int roundIdentifier)
+	public static LedgerExchangeRound createRound(int roundId)
 	{
-		ConcurrentMap<String, LedgerDto> ledgerMap = new ConcurrentHashMap<>();
+		LOG.info("Creating a LedgerExchangeRound for round [{}]", roundId);
 
-		return new LedgerExchangeRound(roundIdentifier, ledgerMap, NO_WINNING_LEDGERS);
+		Map<String, LedgerDto> ledgerMap = new HashMap<>();
+
+		return new LedgerExchangeRound(roundId, ledgerMap, NO_WINNING_LEDGERS);
 	}
 
 	public synchronized void accept(String sourceId, LedgerDto ledgerDto) throws LedgerExchangeRoundIsClosedException
