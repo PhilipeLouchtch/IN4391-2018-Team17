@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
@@ -188,6 +189,7 @@ public class ClientBot implements Runnable
             {
                 LOGGER.info(String.format("[%s, %s]: Requesting next worldState", clientId, currentWorldState.getWorldStateClock()));
             }
+
             try
             {
                 worldState = makeRequest(PlayerEndpoints.worldStatePlayerEndpoint, WorldState.class);
@@ -252,6 +254,13 @@ public class ClientBot implements Runnable
     private <E> void makeRequest(String endPoint, E requestBody)
     {
         HttpEntity<E> request = new HttpEntity<>(requestBody);
-        restTemplate.put(createUri(endPoint), request);
+        try
+        {
+            restTemplate.put(createUri(endPoint), request);
+        }
+        catch (HttpServerErrorException ex)
+        {
+            LOGGER.error("Error during request to {}", endPoint);
+        }
     }
 }
