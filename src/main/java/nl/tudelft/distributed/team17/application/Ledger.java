@@ -151,31 +151,29 @@ public class Ledger
 
 		// In first round a winning Ledger that came from a Dto is both a genesis and float, can only discern
 		// the generation we're in through looking at the losing ledger as it still has all references
-		if (!losingLedger.isGenesis())
-		{
-			WorldState startingWorldState = this.previous.worldState;
-			try
-			{
-				this.worldState = startingWorldState;
-
-				for (int i = 0; i < commands.size(); i++)
-				{
-					Command command = commands.get(i);
-					command.apply(worldState);
-				}
-			}
-			catch (Exception ex)
-			{
-				throw new RuntimeException("Fatal error: encountered an exception during application of newly accepted Ledger's commands on top of previous ledger", ex);
-			}
-
-			// no longer need to keep this in memory, removing reference for GC
-			this.previous.worldState = null;
-		}
-		else
+		if (losingLedger.isGenesis())
 		{
 			throw new RuntimeException("Fatal error: cannot replace a genesis ledger");
 		}
+
+		WorldState startingWorldState = this.previous.worldState;
+		this.worldState = startingWorldState;
+
+		try
+		{
+			for (int i = 0; i < commands.size(); i++)
+			{
+				Command command = commands.get(i);
+				command.apply(worldState);
+			}
+		}
+		catch (Exception ex)
+		{
+			throw new RuntimeException("Fatal error: encountered an exception during application of newly accepted Ledger's commands on top of previous ledger", ex);
+		}
+
+		// no longer need to keep this in memory, removing reference for GC
+		this.previous.worldState = null;
 	}
 
 	public void setClosed()
