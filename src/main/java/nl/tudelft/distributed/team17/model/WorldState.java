@@ -142,7 +142,7 @@ public class WorldState
 
 	private static void assertSameUnitId(Unit unitOne, Unit unitTwo)
 	{
-		if(unitOne.getId().equals(unitTwo.getId()))
+		if(!unitOne.getId().equals(unitTwo.getId()))
 		{
 			String message = String.format("Unit ids do not match, was: [%s] and [%s]", unitOne.getId(), unitTwo.getId());
 			throw new IllegalArgumentException(message);
