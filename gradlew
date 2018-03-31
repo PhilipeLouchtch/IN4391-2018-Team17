@@ -33,11 +33,11 @@ DEFAULT_JVM_OPTS=""
 # Use the maximum available, or set MAX_FD != -1 to use that value.
 MAX_FD="maximum"
 
-warn ( ) {
+warn () {
     echo "$*"
 }
 
-die ( ) {
+die () {
     echo
     echo "$*"
     echo
@@ -78,14 +78,14 @@ if [ -n "$JAVA_HOME" ] ; then
         die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
 
 Please set the JAVA_HOME variable in your environment to match the
-locationToAttack of your Java installation."
+location of your Java installation."
     fi
 else
     JAVACMD="java"
     which java >/dev/null 2>&1 || die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
 
 Please set the JAVA_HOME variable in your environment to match the
-locationToAttack of your Java installation."
+location of your Java installation."
 fi
 
 # Increase the maximum file descriptors if we can.
@@ -155,7 +155,7 @@ if $cygwin ; then
 fi
 
 # Escape application args
-save ( ) {
+save () {
     for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
     echo " "
 }
