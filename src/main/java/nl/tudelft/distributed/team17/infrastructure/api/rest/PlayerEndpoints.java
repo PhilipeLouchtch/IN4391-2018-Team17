@@ -45,7 +45,7 @@ public class PlayerEndpoints
 		LOGGER.info("Initialized Player Endpoints");
 	}
 
-	@PostMapping(path = PlayerEndpoints.movePlayerEndpoint)
+	@PutMapping(path = PlayerEndpoints.movePlayerEndpoint)
 	public void move(@RequestBody MoveCommandDTO moveCommandDTO)
 	{
 		ledgerController.startRunning();
