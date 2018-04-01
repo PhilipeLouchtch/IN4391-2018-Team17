@@ -1,0 +1,98 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GameWorld viewer</title>
+
+    <style>
+        .grid-element {
+            width: 25px;
+            height: 25px;
+            border: 2px solid black;
+        }
+
+        .player {
+            background-color: green;
+        }
+
+        .dragon {
+            background-color: red; 
+        }
+    </style>
+
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script defer="defer">
+        $(document).ready(function() {
+            let grid = makeGrid();
+            $(grid).appendTo('.holder');
+
+            setInterval(getWorldStateAndDraw, 100);
+        });
+        
+        function getWorldStateAndDraw()
+        {
+            $.getJSON({url: "http://localhost/world"})
+                .done(bla => handleWorldState(bla))
+                .fail(bla => console.error('error'));
+        }
+
+        function handleWorldState(worldState, status, xhr)
+        {
+            // clearGrid();
+
+            let fields = worldState.boards.fields;
+            for (let x = 0; x < 25; x++)
+            {
+                for (let y = 0; y < 25; y++)
+                {
+                    let field = fields[x][y];
+                    
+                    if (field == null) {
+                        $(`#${x}-${y}`).removeClass("dragon player");
+                    }
+                    else if (field.unitType == "DRAGON") {
+                        $(`#${x}-${y}`).addClass("dragon");
+                    }
+                    else if (field.unitType == "PLAYER") {
+                        $(`#${x}-${y}`).addClass("player");
+                    }
+                }
+            }
+
+            console.log(`world-state ${worldState.worldStateClock} drawn`);
+        }
+
+        function makeGrid()
+        {
+            const table = document.createElement("table");
+            table.setAttribute("id", "grid");
+
+            for(let y = 24; y >= 0; y--)
+            {
+                const row = table.insertRow(24 - y);
+                row.setAttribute("id", y);
+                
+                for(let x = 0; x < 25; x++)
+                {
+                    const col = row.insertCell(x);
+                    col.setAttribute("id", `${x}-${y}`);
+                    col.setAttribute("class", "grid-element");
+                }
+            }
+            
+            return table;
+        }
+
+        function clearGrid()
+        {
+            $(".grid-element").removeClass("player dragon");
+        }
+    </script>
+</head>
+<body>
+    <div class="holder">
+
+    </div>
+</body>
+</html>

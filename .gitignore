@@ -12,3 +12,5 @@ out/
 
 *.class
 /build/
+
+**/node_modules/
