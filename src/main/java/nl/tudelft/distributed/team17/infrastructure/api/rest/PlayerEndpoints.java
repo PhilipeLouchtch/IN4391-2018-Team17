@@ -22,6 +22,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping
+@CrossOrigin(origins = "*")
 public class PlayerEndpoints
 {
 	public static final String movePlayerEndpoint = "/move";
