@@ -68,7 +68,7 @@ public class Location
 		return new Location(x, y);
 	}
 
-	public int maxDistanceTo(Location other)
+	public int distanceTo(Location other)
 	{
 		return Math.abs(this.x - other.getX()) + Math.abs(this.y - other.getY());
 	}
@@ -78,22 +78,25 @@ public class Location
 		List<Direction> moveDirections = new ArrayList<>();
 		Integer deltaX = getX() - targetLocation.getX();
 		Integer deltaY = getY() - targetLocation.getY();
+
 		if(deltaX > 0)
-		{
-			moveDirections.add(Direction.down);
-		}
-		else if(deltaX < 0)
-		{
-			moveDirections.add(Direction.up);
-		}
-		if(deltaY > 0)
 		{
 			moveDirections.add(Direction.left);
 		}
-		else if(deltaY < 0)
+		else if(deltaX < 0)
 		{
 			moveDirections.add(Direction.right);
 		}
+
+		if(deltaY > 0)
+		{
+			moveDirections.add(Direction.down);
+		}
+		else if(deltaY < 0)
+		{
+			moveDirections.add(Direction.up);
+		}
+
 		return moveDirections;
 	}
 

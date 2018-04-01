@@ -80,7 +80,7 @@ public class UnitsInWorld
         {
            boolean notDead = !value.isDead();
            boolean isPlayer = value.getUnitType() == UnitType.PLAYER;
-           boolean isInRange = value.getLocation().maxDistanceTo(unitLocation) <= range;
+           boolean isInRange = value.getLocation().distanceTo(unitLocation) <= range;
            boolean isNotSameUnit = value != unit;
 
            return notDead && isPlayer && isInRange && isNotSameUnit;

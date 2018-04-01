@@ -9,7 +9,6 @@ import nl.tudelft.distributed.team17.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
@@ -110,8 +109,9 @@ public class ClientBot implements Runnable
         Unit closestDragonValue = closestDragon.get();
         Location closestDragonLocation = closestDragonValue.getLocation();
         Location clientLocation = clientUnit.getLocation();
+
         // We need to move towards that dragon
-        if(closestDragonLocation.maxDistanceTo(clientLocation) > 2)
+        if(clientLocation.distanceTo(closestDragonLocation) > 2)
         {
             performMoveTowardsDragonAction(closestDragonValue);
         }

@@ -34,7 +34,7 @@ public class Board
 	{
 		int x = location.getX(), y = location.getY();
 
-		return (x < fields.length) && (y < fields.length) && (0 <= x) && (0 <= y);
+		return (x < fields.length) && (y < fields.length) && (x >= 0) && (y >= 0);
 	}
 
 	public boolean isLocationOccupied(Location location)

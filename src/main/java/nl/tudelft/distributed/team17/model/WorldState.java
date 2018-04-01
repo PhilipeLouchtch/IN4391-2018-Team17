@@ -2,7 +2,6 @@ package nl.tudelft.distributed.team17.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +59,7 @@ public class WorldState
 		Unit unit = units.getPlayerUnitOrThrow(playerId);
 		assertUnitIsAlive(unit);
 
-		int distance = unit.getLocation().maxDistanceTo(locationToHeal);
+		int distance = unit.getLocation().distanceTo(locationToHeal);
 		if (distance > 5)
 		{
 			throw new HealRangeException(unit, locationToHeal, distance);
@@ -78,7 +77,7 @@ public class WorldState
 		Unit attacker = units.getUnitOrThrow(attackerId);
 		assertUnitIsAlive(attacker);
 
-		int distance = attacker.getLocation().maxDistanceTo(locationToAttack);
+		int distance = attacker.getLocation().distanceTo(locationToAttack);
 		if (distance > 2)
 		{
 			throw new AttackRangeException(attacker, locationToAttack, distance);
