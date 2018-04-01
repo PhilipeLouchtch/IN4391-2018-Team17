@@ -65,7 +65,7 @@ public class WorldState
 			throw new HealRangeException(unit, locationToHeal, distance);
 		}
 
-		Unit unitToHeal = board.getAt(locationToHeal);
+		Unit unitToHeal = board.getAt(locationToHeal).orElseThrow(() -> new LocationContaintsNoUnitsException(locationToHeal));
 		Unit healedUnit = unitToHeal.incurHeal(unit.getAttackPower());
 		swapUnits(unitToHeal, healedUnit);
 
@@ -83,7 +83,7 @@ public class WorldState
 			throw new AttackRangeException(attacker, locationToAttack, distance);
 		}
 
-		Unit unitToAttack = board.getAt(locationToAttack);
+		Unit unitToAttack = board.getAt(locationToAttack).orElseThrow(() -> new LocationContaintsNoUnitsException(locationToAttack));
 
 		damageUnit(attacker, unitToAttack);
 	}
@@ -148,7 +148,7 @@ public class WorldState
 		}
 	}
 
-	private void assertUnitIsAlive(Unit unit)
+	private static void assertUnitIsAlive(Unit unit)
 	{
 		if (unit.isDead())
 		{
@@ -190,7 +190,7 @@ public class WorldState
 		return units.anyDragonLeft();
 	}
 
-	public void incrementClock()
+	public synchronized void incrementClock()
 	{
 		worldStateClock++;
 	}

@@ -32,20 +32,19 @@ public class Board
 
 	public boolean isValidLocation(Location location)
 	{
+		if (location == Location.INVALID_LOCATION)
+		{
+			return false;
+		}
+
 		int x = location.getX(), y = location.getY();
 
 		return (x < fields.length) && (y < fields.length) && (x >= 0) && (y >= 0);
 	}
 
-	public boolean isLocationOccupied(Location location)
+	public synchronized boolean isLocationOccupied(Location location)
 	{
-		Unit unitAtLocation = getAt(location);
-		if (unitAtLocation == NO_UNIT_AT_LOCATION)
-		{
-			return false;
-		}
-
-		return true;
+		return getAt(location).isPresent();
 	}
 
 	public synchronized void removeUnit(Unit unit)
@@ -70,11 +69,17 @@ public class Board
 		placeUnit(newUnit);
 	}
 
-	public Unit getAt(Location location)
+	public synchronized Optional<Unit> getAt(Location location)
 	{
 		assertIsValid(location);
 
-		return fields[location.getX()][location.getY()];
+		Unit unit = fields[location.getX()][location.getY()];
+
+		if (unit == NO_UNIT_AT_LOCATION) {
+			return Optional.empty();
+		}
+
+		return Optional.of(unit);
 	}
 
 	public synchronized Optional<Unit> placeUnitOnRandomEmptyLocation(Random random, Unit unit)
