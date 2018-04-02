@@ -26,6 +26,8 @@ public class LedgerExchangeRoundManager
 
 	public synchronized void accept(String serverId, LedgerDto ledgerDto) throws LedgerExchangeRound.LedgerExchangeRoundIsClosedException
 	{
+		Objects.requireNonNull(ledgerDto, "LedgerDto cannot be null");
+
 		int roundId = ledgerDto.getGeneration();
 
 		final LedgerExchangeRound ledgerExchangeRound = getExistingOrCreateNewLedgerExchangeRound(roundId);
