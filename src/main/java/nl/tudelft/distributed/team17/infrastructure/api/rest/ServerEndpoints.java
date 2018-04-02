@@ -69,12 +69,12 @@ public class ServerEndpoints
 		{
 			Optional<LedgerDto> winnerOfRound = ledgerExchangeRoundManager.getWinnerOfRound(generationOfLedger);
 
-			Sleep.forMilis(PERIOD_IN_MS);
-
 			if (winnerOfRound.isPresent())
 			{
 				return winnerOfRound.get();
 			}
+
+			Sleep.forMilis(PERIOD_IN_MS);
 		}
 
 		return null;
