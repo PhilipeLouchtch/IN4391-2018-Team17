@@ -64,7 +64,7 @@ public class ServerEndpoints
 		}
 
 		final int TIMEOUT_IN_MS = 30000;
-		final int PERIOD_IN_MS = 100;
+		final int PERIOD_IN_MS = 20;
 		for (int i = 0; i < TIMEOUT_IN_MS / PERIOD_IN_MS; i++)
 		{
 			Optional<LedgerDto> winnerOfRound = ledgerExchangeRoundManager.getWinnerOfRound(generationOfLedger);
