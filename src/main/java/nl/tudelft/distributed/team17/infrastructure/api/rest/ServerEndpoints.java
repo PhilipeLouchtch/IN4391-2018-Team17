@@ -1,6 +1,7 @@
 package nl.tudelft.distributed.team17.infrastructure.api.rest;
 
 import nl.tudelft.distributed.team17.application.*;
+import nl.tudelft.distributed.team17.infrastructure.InterServerCommunication;
 import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
 import nl.tudelft.distributed.team17.model.command.Command;
 import nl.tudelft.distributed.team17.util.Sleep;
@@ -63,7 +64,7 @@ public class ServerEndpoints
 			LOG.warn(String.format("Could not accept Ledger from [%s] due to error", serverId), ex);
 		}
 
-		final int TIMEOUT_IN_MS = 30000;
+		final long TIMEOUT_IN_MS = InterServerCommunication.EXCHANGE_LEDGERS_TX_TIMEOUT_MS;
 		final int PERIOD_IN_MS = 20;
 		for (int i = 0; i < TIMEOUT_IN_MS / PERIOD_IN_MS; i++)
 		{

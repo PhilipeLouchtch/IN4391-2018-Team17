@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class InterServerCommunication
 {
 	private final static Logger LOG = LoggerFactory.getLogger(InterServerCommunication.class);
-	private final static long EXCHANGE_LEDGERS_TX_TIMEOUT_MS = 200;
+	public final static long EXCHANGE_LEDGERS_TX_TIMEOUT_MS = 200;
 
 	private ExecutorService executorService;
 	private RestTemplate restTemplate;
