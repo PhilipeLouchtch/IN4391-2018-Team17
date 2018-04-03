@@ -1,11 +1,12 @@
 package nl.tudelft.distributed.team17.application;
 
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,16 +28,33 @@ public class LedgerConsensus
 			ledgers.forEach(ledger -> LOG.debug(ledger.toString()));
 		}
 
-		Ledger bestLedger = ledgers.stream()
-				.filter(ledger -> ledger.getGeneration() == generationToRunFor)
-				.reduce(null, this::pickBest);
+		// First check if any of the ledgers share a hashcode, this means that we're in a "slave" round.
+		// Another machine has already decided on the winner which is reason why we have more than 1 ledger with same hash,
+		// in this case we need to accept the majority
+		Map<String, List<Ledger>> ledgersGroupedByHashHex = ledgers.stream()
+				.collect(Collectors.groupingBy(Ledger::getHashHex));
 
-		if (bestLedger == null)
+		Optional<List<Ledger>> max = ledgersGroupedByHashHex.values().stream().filter(list -> list.size() > 1).max(Comparator.comparingInt(List::size));
+		if (max.isPresent())
 		{
-			throw new Error("Unrecoverable error: consensus failed to find a ledger");
-		}
+			Ledger ledger = max.get().get(0);
+			LOG.info("Received more than one Ledger with same hash (%s), picking it as winner", ledger.getHashHex());
 
-		return bestLedger;
+			return ledger;
+		}
+		else
+		{
+			Ledger bestLedger = ledgers.stream()
+					.filter(ledger -> ledger.getGeneration() == generationToRunFor)
+					.reduce(null, this::pickBest);
+
+			if (bestLedger == null)
+			{
+				throw new Error("Unrecoverable error: consensus failed to find a ledger");
+			}
+
+			return bestLedger;
+		}
 	}
 
 	private Ledger pickBest(Ledger ledgerOne, Ledger ledgerTwo)
