@@ -99,7 +99,7 @@ public class Board
 			if (!isLocationOccupied(location))
 			{
 				Unit placedUnit = unit.placed(location);
-				setAt(location, unit);
+				setAt(location, placedUnit);
 
 				return Optional.of(placedUnit);
 			}
