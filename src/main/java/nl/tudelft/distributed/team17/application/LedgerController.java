@@ -53,8 +53,17 @@ public class LedgerController implements Runnable
 	{
 		if (!isRunning())
 		{
-			LOG.info("Starting running ledger");
-			executorService.submit(this);
+			synchronized (this)
+			{
+				// prevent a race between startRunning and run
+				if (!isRunning())
+				{
+					ledgerOpenedAtInstant = Instant.now();
+
+					LOG.info("Starting running ledger");
+					executorService.submit(this);
+				}
+			}
 		}
 	}
 
@@ -92,7 +101,7 @@ public class LedgerController implements Runnable
 			ourLedger.setClosed();
 
 			// Workaround for when there's only one server: need to let ledgerExchangeRoundManager know of our ledger or it will spazz out
-			Try.doing(() -> ledgerExchangeRoundManager.accept("THIS_SERVER", LedgerDto.from(ourLedger))).or(Rethrow.asRuntime());
+			Try.doing(() -> ledgerExchangeRoundManager.accept("THIS_SERVER", ourLedger)).or(Rethrow.asRuntime());
 
 			Ledger winner = interServerCommunication.exchangeLedger(ourLedger);
 
