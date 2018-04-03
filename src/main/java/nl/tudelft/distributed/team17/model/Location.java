@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
@@ -124,5 +125,21 @@ public class Location
 		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(y));
 
 		return messageDigest.digest();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		Location location = (Location) o;
+		return x == location.x &&
+				y == location.y;
 	}
 }

@@ -60,9 +60,14 @@ public class Board
 	public synchronized void swapUnits(Unit oldUnit, Unit newUnit)
 	{
 		Location newLocation = newUnit.getLocation();
-
 		assertIsValid(newLocation);
-		assertNotOccupied(newLocation);
+
+		// if units to swap are of the same unit (just updated the data),
+		// and they did not change location, do not enforce the not-occupied rule
+		if (!oldUnit.getId().equals(newUnit.getId()) || !oldUnit.getLocation().equals(newUnit.getLocation()))
+		{
+			assertNotOccupied(newLocation);
+		}
 
 		// out with the old, in with the new
 		removeUnit(oldUnit);
