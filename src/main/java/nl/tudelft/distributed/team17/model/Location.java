@@ -3,7 +3,11 @@ package nl.tudelft.distributed.team17.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rits.cloning.Immutable;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -107,5 +111,14 @@ public class Location
 				"x=" + x +
 				", y=" + y +
 				'}';
+	}
+
+	public byte[] getHash()
+	{
+		MessageDigest messageDigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
+		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(x));
+		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(y));
+
+		return messageDigest.digest();
 	}
 }

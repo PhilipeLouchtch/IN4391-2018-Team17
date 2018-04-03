@@ -3,7 +3,11 @@ package nl.tudelft.distributed.team17.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rits.cloning.Immutable;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.Random;
 
 @Immutable
@@ -149,5 +153,15 @@ public class Unit
 	public Integer getAttackPower()
 	{
 		return attackPower;
+	}
+
+	public byte[] getHash()
+	{
+		MessageDigest messageDigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
+		messageDigest = DigestUtils.updateDigest(messageDigest, id);
+		messageDigest = DigestUtils.updateDigest(messageDigest, location.getHash());
+		messageDigest = DigestUtils.updateDigest(messageDigest, unitHealth.getHash());
+
+		return messageDigest.digest();
 	}
 }

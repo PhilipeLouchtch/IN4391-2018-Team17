@@ -3,6 +3,11 @@ package nl.tudelft.distributed.team17.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rits.cloning.Immutable;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 
 @Immutable
 public class UnitHealth
@@ -49,5 +54,14 @@ public class UnitHealth
 	public boolean halfHealthOrLess()
 	{
 		return current/maximum <= 1/2;
+	}
+
+	public byte[] getHash()
+	{
+		MessageDigest messageDigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
+		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(current));
+		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(maximum));
+
+		return messageDigest.digest();
 	}
 }

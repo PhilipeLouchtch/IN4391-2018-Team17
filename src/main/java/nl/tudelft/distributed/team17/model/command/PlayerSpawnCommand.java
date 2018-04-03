@@ -3,7 +3,9 @@ package nl.tudelft.distributed.team17.model.command;
 import nl.tudelft.distributed.team17.model.Unit;
 import nl.tudelft.distributed.team17.model.UnitType;
 import nl.tudelft.distributed.team17.model.WorldState;
+import org.apache.commons.codec.digest.DigestUtils;
 
+import java.security.MessageDigest;
 import java.util.Optional;
 
 public class PlayerSpawnCommand extends PlayerCommand
@@ -39,5 +41,13 @@ public class PlayerSpawnCommand extends PlayerCommand
         {
             LOGGER.info(String.format("Player [%s] could not be spawned", getPlayerId()));
         }
+    }
+
+    @Override
+    public byte[] getHash()
+    {
+        MessageDigest messageDigest = getDigestOfBase();
+
+        return messageDigest.digest();
     }
 }

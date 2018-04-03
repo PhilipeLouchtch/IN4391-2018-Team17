@@ -6,8 +6,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import nl.tudelft.distributed.team17.model.UnitDeadException;
 import nl.tudelft.distributed.team17.model.WorldState;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes(value = {
@@ -40,7 +45,7 @@ public abstract class Command
         return clock;
     }
 
-    public boolean isPriority()
+    public final boolean isPriority()
     {
         return isPriority;
     }
@@ -66,5 +71,17 @@ public abstract class Command
         }
     }
 
+    protected MessageDigest getDigestOfBase()
+    {
+        MessageDigest messageDigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
+        messageDigest = DigestUtils.updateDigest(messageDigest, this.getClass().getSimpleName());
+        messageDigest = DigestUtils.updateDigest(messageDigest, playerId);
+        messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(clock));
+
+        return messageDigest;
+    }
+
     public abstract void apply(WorldState worldState);
+
+    public abstract byte[] getHash();
 }

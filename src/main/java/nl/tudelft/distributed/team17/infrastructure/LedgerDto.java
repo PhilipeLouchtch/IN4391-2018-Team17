@@ -3,6 +3,8 @@ package nl.tudelft.distributed.team17.infrastructure;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.application.Ledger;
 import nl.tudelft.distributed.team17.model.command.Command;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,18 +23,50 @@ public class LedgerDto
 	@JsonProperty("tieBreaker")
 	private int tieBreaker;
 
-	public LedgerDto(List<Command> commands, int commandsAcceptedByLedgerChain, int generation, int tieBreaker)
+	@JsonProperty("hash")
+	private String hash;
+
+	// For Jackson
+	private LedgerDto()
+	{
+	}
+
+	public LedgerDto(List<Command> commands, int commandsAcceptedByLedgerChain, int generation, int tieBreaker, String hash)
 	{
 		this();
 		this.commands = commands;
 		this.commandsAcceptedByLedgerChain = commandsAcceptedByLedgerChain;
 		this.generation = generation;
 		this.tieBreaker = tieBreaker;
+		this.hash = hash;
 	}
 
 	public static LedgerDto from(Ledger ledger)
 	{
-		return new LedgerDto(ledger.getCommands(), ledger.getNumCommandsAcceptedSoFar(), ledger.getGeneration(), ledger.getTieBreaker());
+
+		List<Command> commands = ledger.getCommands();
+		int numCommandsAcceptedSoFar = ledger.getNumCommandsAcceptedSoFar();
+		int generation = ledger.getGeneration();
+		int tieBreaker = ledger.getTieBreaker();
+		String hash = Hex.encodeHexString(ledger.getHash());
+
+		return new LedgerDto(commands, numCommandsAcceptedSoFar, generation, tieBreaker, hash);
+	}
+
+	public Ledger toLedger()
+	{
+		byte[] hashAsByteArray;
+		try
+		{
+			hashAsByteArray = Hex.decodeHex(hash);
+		}
+		catch (DecoderException ex)
+		{
+			// Idk
+			throw new RuntimeException(ex);
+		}
+
+		return Ledger.makeFloating(commands, generation, commandsAcceptedByLedgerChain, tieBreaker, hashAsByteArray);
 	}
 
 	public List<Command> getCommands()
@@ -53,16 +87,6 @@ public class LedgerDto
 	public int getTieBreaker()
 	{
 		return tieBreaker;
-	}
-
-	public Ledger toLedger()
-	{
-		return Ledger.makeFloating(commands, generation, commandsAcceptedByLedgerChain, tieBreaker);
-	}
-
-	// For Jackson
-	private LedgerDto()
-	{
 	}
 
 	private String commandsToString()

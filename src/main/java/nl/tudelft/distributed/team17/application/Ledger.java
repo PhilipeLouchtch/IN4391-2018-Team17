@@ -1,11 +1,17 @@
 package nl.tudelft.distributed.team17.application;
 
 import com.rits.cloning.Cloner;
+import net.coolicer.lang.Lazy;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 import java.util.*;
 
 public class Ledger
@@ -32,7 +38,7 @@ public class Ledger
 	// holds a tie-breaking roll
 	private final int tieBreaker;
 
-	// TODO: Hashcode of Ledger once closed
+	private byte[] hashLazy;
 
 	private Ledger(Ledger previous, WorldState worldState, int generation, boolean isClosed, int commandsAcceptedSoFar, int tieBreaker)
 	{
@@ -44,6 +50,8 @@ public class Ledger
 		this.tieBreaker = tieBreaker;
 
 		commands = new ArrayList<>();
+
+		hashLazy = null; // lazy
 	}
 
 	public static Ledger genesis(WorldState worldState)
@@ -65,15 +73,17 @@ public class Ledger
 	 * @param generation The generation number of the Ledger to construct
 	 * @param commandsAcceptedSoFar The number of commands that the Ledger and its chain have seen
 	 * @param tieBreaker The tie-breaker number generated for the Ledger
+	 * @param hashAsByteArray
 	 * @return A newly constructed Ledger without a link to a previous Ledger in the chain
 	 */
-	public static Ledger makeFloating(List<Command> commands, int generation, int commandsAcceptedSoFar, int tieBreaker)
+	public static Ledger makeFloating(List<Command> commands, int generation, int commandsAcceptedSoFar, int tieBreaker, byte[] hashAsByteArray)
 	{
 		final boolean IS_CLOSED = true;
 		final WorldState NO_WORLDSTATE = null;
 
 		Ledger ledger = new Ledger(NO_PREVIOUS, NO_WORLDSTATE, generation, IS_CLOSED, commandsAcceptedSoFar, tieBreaker);
 		ledger.commands = commands;
+		ledger.hashLazy = hashAsByteArray;
 
 		return ledger;
 	}
@@ -174,6 +184,35 @@ public class Ledger
 
 		// no longer need to keep this in memory, removing reference for GC
 		this.previous.worldState = null;
+	}
+
+	public byte[] getHash()
+	{
+		if (hashLazy == null)
+		{
+			hashLazy = doHashLedger();
+		}
+
+		return hashLazy;
+	}
+
+	public String getHashHex()
+	{
+		return Hex.encodeHexString(getHash());
+	}
+
+	private byte[] doHashLedger()
+	{
+		MessageDigest messageDigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
+		messageDigest = DigestUtils.updateDigest(messageDigest, this.previous.getHash());
+		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(generation));
+
+		for (Command command : commands)
+		{
+			messageDigest = DigestUtils.updateDigest(messageDigest, command.getHash());
+		}
+
+		return messageDigest.digest();
 	}
 
 	public void setClosed()

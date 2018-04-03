@@ -3,6 +3,10 @@ package nl.tudelft.distributed.team17.model.command;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.Direction;
 import nl.tudelft.distributed.team17.model.WorldState;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
 
 public class PlayerMoveCommand extends PlayerCommand
 {
@@ -40,5 +44,14 @@ public class PlayerMoveCommand extends PlayerCommand
 		assertUnitAlive(worldState);
 		worldState.movePlayer(getPlayerId(), getDirection());
 		LOGGER.info(String.format("Player [%s] successfully moved in direction %s", getPlayerId(), getDirection()));
+	}
+
+	@Override
+	public byte[] getHash()
+	{
+		MessageDigest messageDigest = getDigestOfBase();
+		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(direction.ordinal()));
+
+		return messageDigest.digest();
 	}
 }

@@ -3,6 +3,12 @@ package nl.tudelft.distributed.team17.model.command;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.Unit;
 import nl.tudelft.distributed.team17.model.WorldState;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.MessageDigestAlgorithms;
+
+import java.nio.ByteBuffer;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 
 public class DragonAttackCommand extends DragonCommand
 {
@@ -40,5 +46,12 @@ public class DragonAttackCommand extends DragonCommand
         LOGGER.info(String.format("Dragon [%s] successfully attacked player [%s]", getPlayerId(), playerToAttack.getId()));
     }
 
+    @Override
+    public byte[] getHash()
+    {
+        MessageDigest messageDigest = getDigestOfBase();
+        messageDigest = DigestUtils.updateDigest(messageDigest, playerToAttack.getHash());
 
+        return messageDigest.digest();
+    }
 }

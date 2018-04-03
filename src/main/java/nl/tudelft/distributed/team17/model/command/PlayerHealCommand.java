@@ -3,6 +3,9 @@ package nl.tudelft.distributed.team17.model.command;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.Location;
 import nl.tudelft.distributed.team17.model.WorldState;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.security.MessageDigest;
 
 public class PlayerHealCommand extends PlayerCommand
 {
@@ -40,5 +43,14 @@ public class PlayerHealCommand extends PlayerCommand
 		assertUnitAlive(worldState);
 		worldState.healPlayer(getPlayerId(), getLocationToHeal());
 		LOGGER.info(String.format("Player [%s] successfully healed unit at location (%d,%d)", getPlayerId(), locationToHeal.getX(), locationToHeal.getY()));
+	}
+
+	@Override
+	public byte[] getHash()
+	{
+		MessageDigest messageDigest = getDigestOfBase();
+		messageDigest = DigestUtils.updateDigest(messageDigest, locationToHeal.getHash());
+
+		return messageDigest.digest();
 	}
 }
