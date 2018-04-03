@@ -136,7 +136,7 @@ public class WorldState
 	{
 		assertSameUnitId(oldUnit, newUnit);
 		board.removeUnit(oldUnit);
-		units.update(newUnit);
+		units.update(newUnit.withoutLocation());
 	}
 
 	private static void assertSameUnitId(Unit unitOne, Unit unitTwo)
