@@ -162,8 +162,11 @@ public class Unit
 	{
 		MessageDigest messageDigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
 		messageDigest = DigestUtils.updateDigest(messageDigest, id);
-		messageDigest = DigestUtils.updateDigest(messageDigest, location.getHash());
 		messageDigest = DigestUtils.updateDigest(messageDigest, unitHealth.getHash());
+		if (location != Location.INVALID_LOCATION)
+		{
+			messageDigest = DigestUtils.updateDigest(messageDigest, location.getHash());
+		}
 
 		return messageDigest.digest();
 	}
