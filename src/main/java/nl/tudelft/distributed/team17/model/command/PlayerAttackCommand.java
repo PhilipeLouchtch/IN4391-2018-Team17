@@ -3,6 +3,9 @@ package nl.tudelft.distributed.team17.model.command;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import nl.tudelft.distributed.team17.model.Location;
 import nl.tudelft.distributed.team17.model.WorldState;
+import org.apache.commons.codec.digest.DigestUtils;
+
+import java.security.MessageDigest;
 
 public class PlayerAttackCommand extends PlayerCommand
 {
@@ -40,5 +43,14 @@ public class PlayerAttackCommand extends PlayerCommand
 		assertUnitAlive(worldState);
 		worldState.damageUnit(getPlayerId(), getLocationToAttack());
 		LOGGER.info(String.format("Player [%s] successfully attacked unit at location (%d,%d)", getPlayerId(), locationToAttack.getX(), locationToAttack.getY()));
+	}
+
+	@Override
+	public byte[] getHash()
+	{
+		MessageDigest digestOfBase = getDigestOfBase();
+		MessageDigest messageDigest = DigestUtils.updateDigest(digestOfBase, locationToAttack.getHash());
+
+		return messageDigest.digest();
 	}
 }
