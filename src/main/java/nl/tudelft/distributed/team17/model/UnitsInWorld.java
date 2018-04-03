@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UnitsInWorld
 {
@@ -78,12 +79,12 @@ public class UnitsInWorld
 
         Predicate<Unit> filterCondition = (value) ->
         {
-           boolean notDead = !value.isDead();
+           boolean isAlive = value.isAlive();
            boolean isPlayer = value.getUnitType() == UnitType.PLAYER;
            boolean isInRange = value.getLocation().distanceTo(unitLocation) <= range;
            boolean isNotSameUnit = value != unit;
 
-           return notDead && isPlayer && isInRange && isNotSameUnit;
+           return isAlive && isPlayer && isInRange && isNotSameUnit;
         };
 
         return units.values().stream()
@@ -94,7 +95,7 @@ public class UnitsInWorld
     public boolean anyDragonLeft()
     {
         return units.values().stream()
-                .filter(t -> t.getUnitType() == UnitType.DRAGON).count() != 0;
+                .anyMatch(t -> t.getUnitType() == UnitType.DRAGON && t.isAlive());
     }
 
     public Optional<Unit> closestDragonTo(Unit unit)
@@ -103,7 +104,7 @@ public class UnitsInWorld
         LocationDistanceComparator comparator = new LocationDistanceComparator(unitLocation);
 
         return units.values().stream()
-                .filter(t -> t.getUnitType() == UnitType.DRAGON)
+                .filter(t -> t.isAlive() && t.getUnitType() == UnitType.DRAGON)
                 .min(comparator);
     }
 
