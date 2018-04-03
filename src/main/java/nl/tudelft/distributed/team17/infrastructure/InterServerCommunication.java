@@ -1,8 +1,8 @@
 package nl.tudelft.distributed.team17.infrastructure;
 
-import nl.tudelft.distributed.team17.application.LedgerExchangeRoundManager;
 import nl.tudelft.distributed.team17.application.KnownServerList;
 import nl.tudelft.distributed.team17.application.Ledger;
+import nl.tudelft.distributed.team17.application.LedgerExchangeRoundManager;
 import nl.tudelft.distributed.team17.infrastructure.api.rest.ServerEndpoints;
 import nl.tudelft.distributed.team17.model.command.Command;
 import org.slf4j.Logger;
@@ -12,12 +12,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Component
 public class InterServerCommunication
@@ -43,11 +45,9 @@ public class InterServerCommunication
 	private final Object ledgerExchangeLock = new Object();
 	public Ledger exchangeLedger(Ledger ledger)
 	{
-		// Todo: optimization, do not exchange with servers which already exchanged
 		synchronized (ledgerExchangeLock)
 		{
 			LedgerDto ourLedgerAsDto = LedgerDto.from(ledger);
-
 			Set<String> knownServers = knownServerList.getKnownOtherServers();
 
 			// hacky: List of Callable<LedgerDto> instead of Runnable to more easily set timeouts on the tasks through executorService.invokeAll(...)
@@ -119,7 +119,7 @@ public class InterServerCommunication
 		try
 		{
 			LedgerDto receivedLedgerDto = restTemplate.postForObject(uriWithLocation, ledgerDto, LedgerDto.class);
-			ledgerExchangeRoundManager.accept(server, receivedLedgerDto);
+			ledgerExchangeRoundManager.accept(server, receivedLedgerDto.toLedger());
 		}
 		catch (Exception ex)
 		{

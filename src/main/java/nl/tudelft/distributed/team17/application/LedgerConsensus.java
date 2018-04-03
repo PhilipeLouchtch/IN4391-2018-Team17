@@ -1,12 +1,10 @@
 package nl.tudelft.distributed.team17.application;
 
-import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +16,7 @@ public class LedgerConsensus
 	{
 	}
 
-	public Ledger runConsensus(List<Ledger> ledgers, int generationToRunFor)
+	public Ledger runConsensus(Collection<Ledger> ledgers, int generationToRunFor)
 	{
 		LOG.info("Starting Consensus determination for round [{}], with [{}] ledgers", generationToRunFor, ledgers.size());
 

@@ -1,6 +1,9 @@
 package nl.tudelft.distributed.team17.infrastructure.api.rest;
 
-import nl.tudelft.distributed.team17.application.*;
+import nl.tudelft.distributed.team17.application.CurrentWorldState;
+import nl.tudelft.distributed.team17.application.KnownServerList;
+import nl.tudelft.distributed.team17.application.LedgerController;
+import nl.tudelft.distributed.team17.application.LedgerExchangeRoundManager;
 import nl.tudelft.distributed.team17.infrastructure.InterServerCommunication;
 import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
 import nl.tudelft.distributed.team17.model.command.Command;
@@ -57,7 +60,7 @@ public class ServerEndpoints
 		try
 		{
 			LOG.info("Passing Ledger (from [{}], round [{}]) to round manager", serverId, generationOfLedger);
-			ledgerExchangeRoundManager.accept(serverId, ledgerAsDto);
+			ledgerExchangeRoundManager.accept(serverId, ledgerAsDto.toLedger());
 		}
 		catch (Exception ex)
 		{

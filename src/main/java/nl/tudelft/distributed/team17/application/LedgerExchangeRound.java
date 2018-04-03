@@ -1,28 +1,25 @@
 package nl.tudelft.distributed.team17.application;
 
-import nl.tudelft.distributed.team17.infrastructure.LedgerDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class LedgerExchangeRound
 {
 	private final static Logger LOG = LoggerFactory.getLogger(LedgerExchangeRound.class);
 
 	private final static String THIS_SERVER = "Henk";
-	private final static Map<String, LedgerDto> ROUND_IS_CLOSED = null;
+	private final static Map<String, Ledger> ROUND_IS_CLOSED = null;
 	private final static Ledger NO_WINNING_LEDGERS = null;
 
 	private int roundIdentifier;
-	private Map<String, LedgerDto> receivedLedgers;
+	private Map<String, Ledger> receivedLedgers;
 	private Ledger winningLedger;
 
-	private LedgerExchangeRound(int roundIdentifier, Map<String, LedgerDto> receivedLedgers, Ledger winningLedger)
+	private LedgerExchangeRound(int roundIdentifier, Map<String, Ledger> receivedLedgers, Ledger winningLedger)
 	{
 		this.roundIdentifier = roundIdentifier;
 		this.receivedLedgers = receivedLedgers;
@@ -33,19 +30,19 @@ public class LedgerExchangeRound
 	{
 		LOG.info("Creating a LedgerExchangeRound for round [{}]", roundId);
 
-		Map<String, LedgerDto> ledgerMap = new HashMap<>();
+		Map<String, Ledger> ledgerMap = new HashMap<>();
 
 		return new LedgerExchangeRound(roundId, ledgerMap, NO_WINNING_LEDGERS);
 	}
 
-	public synchronized void accept(String sourceId, LedgerDto ledgerDto) throws LedgerExchangeRoundIsClosedException
+	public synchronized void accept(String sourceId, Ledger ledger) throws LedgerExchangeRoundIsClosedException
 	{
 		assertRoundIsActive();
-		assertLedgerCanBeAccepted(ledgerDto);
+		assertLedgerCanBeAccepted(ledger);
 
-		LOG.info("Accepting Ledger (from [{}]), round [{}]) into round [{}]", sourceId, ledgerDto.getGeneration(), roundIdentifier);
+		LOG.info("Accepting Ledger (from [{}]), round [{}]) into round [{}]", sourceId, ledger.getGeneration(), roundIdentifier);
 
-		receivedLedgers.put(sourceId, ledgerDto);
+		receivedLedgers.put(sourceId, ledger);
 	}
 
 	public synchronized boolean hasLedgerFor(String sourceId)
@@ -60,7 +57,7 @@ public class LedgerExchangeRound
 		this.winningLedger = winner;
 
 		// find the sourceId of the winner for logging purposes
-		Map.Entry<String, LedgerDto> winnerEntry = receivedLedgers.entrySet().stream()
+		Map.Entry<String, Ledger> winnerEntry = receivedLedgers.entrySet().stream()
 				.filter(stringLedgerDtoEntry -> stringLedgerDtoEntry.getValue().getTieBreaker() == winner.getTieBreaker())
 				.findAny().get();
 
@@ -69,7 +66,7 @@ public class LedgerExchangeRound
 		receivedLedgers = ROUND_IS_CLOSED;
 	}
 
-	public synchronized Collection<LedgerDto> received()
+	public synchronized Collection<Ledger> received()
 	{
 		return receivedLedgers.values();
 	}
@@ -102,7 +99,7 @@ public class LedgerExchangeRound
 		}
 	}
 
-	private void assertLedgerCanBeAccepted(LedgerDto ledgerDto)
+	private void assertLedgerCanBeAccepted(Ledger ledgerDto)
 	{
 		if (ledgerDto.getGeneration() != roundIdentifier)
 		{

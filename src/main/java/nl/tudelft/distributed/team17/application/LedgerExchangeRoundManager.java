@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class LedgerExchangeRoundManager
@@ -24,18 +23,18 @@ public class LedgerExchangeRoundManager
 		this.exchangeRounds = new HashMap<>();
 	}
 
-	public synchronized void accept(String serverId, LedgerDto ledgerDto) throws LedgerExchangeRound.LedgerExchangeRoundIsClosedException
+	public synchronized void accept(String serverId, Ledger ledger) throws LedgerExchangeRound.LedgerExchangeRoundIsClosedException
 	{
-		Objects.requireNonNull(ledgerDto, "LedgerDto cannot be null");
+		Objects.requireNonNull(ledger, "LedgerDto cannot be null");
 
-		int roundId = ledgerDto.getGeneration();
+		int roundId = ledger.getGeneration();
 
 		final LedgerExchangeRound ledgerExchangeRound = getExistingOrCreateNewLedgerExchangeRound(roundId);
 		synchronized(ledgerExchangeRound)
 		{
 			if (!ledgerExchangeRound.isClosed())
 			{
-				ledgerExchangeRound.accept(serverId, ledgerDto);
+				ledgerExchangeRound.accept(serverId, ledger);
 			}
 			else
 			{
@@ -59,7 +58,7 @@ public class LedgerExchangeRoundManager
 		LedgerExchangeRound ledgerExchangeRound = getExistingOrCreateNewLedgerExchangeRound(roundId);
 		synchronized (ledgerExchangeRound)
 		{
-			List<Ledger> ledgersInRound = ledgerExchangeRound.received().stream().map(LedgerDto::toLedger).collect(Collectors.toList());
+			Collection<Ledger> ledgersInRound = ledgerExchangeRound.received();
 
 			Ledger winner = ledgerConsensus.runConsensus(ledgersInRound, roundId);
 			ledgerExchangeRound.closeRound(winner);
