@@ -43,7 +43,6 @@ public class LedgerDto
 
 	public static LedgerDto from(Ledger ledger)
 	{
-
 		List<Command> commands = ledger.getCommands();
 		int numCommandsAcceptedSoFar = ledger.getNumCommandsAcceptedSoFar();
 		int generation = ledger.getGeneration();

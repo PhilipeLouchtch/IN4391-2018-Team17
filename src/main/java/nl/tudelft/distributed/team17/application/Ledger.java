@@ -207,8 +207,11 @@ public class Ledger
 	private byte[] doHashLedger()
 	{
 		MessageDigest messageDigest = new DigestUtils(MessageDigestAlgorithms.SHA_256).getMessageDigest();
-		messageDigest = DigestUtils.updateDigest(messageDigest, this.previous.getHash());
 		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(generation));
+		if (this.previous != NO_PREVIOUS)
+		{
+			messageDigest = DigestUtils.updateDigest(messageDigest, this.previous.getHash());
+		}
 
 		for (Command command : commands)
 		{
