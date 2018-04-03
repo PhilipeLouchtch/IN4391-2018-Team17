@@ -69,7 +69,9 @@ public class InterServerCommunication
 			}
 
 			// Ignoring return value as the ledgers are put into the CurrentLedgerExchangeRound indirection layer
-			executeAsync(fns, EXCHANGE_LEDGERS_TX_TIMEOUT_MS);
+			LOG.debug("Sending ledger to {} servers", fns.size());
+			List<Future<LedgerDto>> futures = executeAsync(fns, EXCHANGE_LEDGERS_TX_TIMEOUT_MS);
+			LOG.debug("Exchange has finished, {} servers responded", futures.stream().filter(future -> !future.isCancelled()).count());
 
 			try
 			{
@@ -129,6 +131,11 @@ public class InterServerCommunication
 
 	private List<Future<LedgerDto>> executeAsync(List<Callable<LedgerDto>> fns, long timeoutInMs)
 	{
+		if (fns.size() == 0)
+		{
+			return Collections.emptyList();
+		}
+
 		try
 		{
 			return executorService.invokeAll(fns, timeoutInMs, TimeUnit.MILLISECONDS);
