@@ -113,11 +113,11 @@ public class LedgerExchangeRoundManager
 		{
 			if (exchangeRounds.containsKey(generation))
 			{
-				return true;
+				LedgerExchangeRound ledgerExchangeRound = exchangeRounds.get(generation);
+				return ledgerExchangeRound.hasLedgerFor(server);
 			}
 		}
 
-		LedgerExchangeRound ledgerExchangeRound = exchangeRounds.get(generation);
-		return ledgerExchangeRound.hasLedgerFor(server);
+		return false;
 	}
 }
