@@ -128,9 +128,19 @@ public class Unit
 		return unitMoved(this, location);
 	}
 
+	public Unit withoutLocation()
+	{
+		return unitMoved(this, Location.INVALID_LOCATION);
+	}
+
 	public boolean isDead()
 	{
 		return getUnitHealth().isEmpty();
+	}
+
+	public boolean isAlive()
+	{
+		return isDead() == false;
 	}
 
 	public UnitType getUnitType()

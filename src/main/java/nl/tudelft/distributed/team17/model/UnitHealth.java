@@ -9,6 +9,7 @@ import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 
@@ -67,5 +68,21 @@ public class UnitHealth
 		messageDigest = DigestUtils.updateDigest(messageDigest, ByteBuffer.allocate(4).putInt(maximum));
 
 		return messageDigest.digest();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+		UnitHealth that = (UnitHealth) o;
+		return current == that.current &&
+				maximum == that.maximum;
 	}
 }

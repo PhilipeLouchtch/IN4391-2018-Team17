@@ -77,6 +77,7 @@ public class WorldState
 		Unit attacker = units.getUnitOrThrow(attackerId);
 		assertUnitIsAlive(attacker);
 
+		// todo: move to unit as canAttack(Location)
 		int distance = attacker.getLocation().distanceTo(locationToAttack);
 		if (distance > 2)
 		{
@@ -123,6 +124,13 @@ public class WorldState
 	public List<Unit> playersInRangeOfUnit(Unit unit, int range)
 	{
 		return units.playersInRangeOfUnit(unit, range);
+	}
+
+	/** Method used for testing */
+	void putUnitIntoWorld(Unit unit)
+	{
+		units.addUnit(unit);
+		board.placeUnit(unit);
 	}
 
 	private synchronized void swapUnits(Unit oldUnit, Unit newUnit)
@@ -193,5 +201,12 @@ public class WorldState
 	public synchronized void incrementClock()
 	{
 		worldStateClock++;
+	}
+
+	// for testing
+
+	public UnitsInWorld getUnits()
+	{
+		return units;
 	}
 }
