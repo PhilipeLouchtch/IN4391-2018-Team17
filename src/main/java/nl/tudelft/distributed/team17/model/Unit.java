@@ -1,16 +1,19 @@
 package nl.tudelft.distributed.team17.model;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.rits.cloning.Immutable;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.codec.digest.MessageDigestAlgorithms;
 
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.util.Random;
 
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+
 @Immutable
+@JsonAutoDetect(isGetterVisibility = NONE, fieldVisibility = NONE, getterVisibility = NONE, setterVisibility = NONE)
 public class Unit
 {
 	static private final int DRAGON_LOWER_AP_BOUND = 5;
