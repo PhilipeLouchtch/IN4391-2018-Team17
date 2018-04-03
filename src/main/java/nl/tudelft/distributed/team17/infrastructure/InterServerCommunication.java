@@ -56,7 +56,9 @@ public class InterServerCommunication
 			for(String server : knownServers)
 			{
 				fns.add(() -> {
+					LOG.info("exchanging ledger [{}] with [{}]", ledger.getHashHex(), server);
 					exchangeLedgerWithServer(ourLedgerAsDto, server);
+					LOG.info("exchanged ledger [{}] with [{}]", ledger.getHashHex(), server);
 					return null;
 				});
 			}
@@ -130,6 +132,11 @@ public class InterServerCommunication
 		{
 			Thread.currentThread().interrupt();
 			throw new RuntimeException(ex);
+		}
+		catch (Exception ex)
+		{
+			LOG.error("Exception during executeAsync", ex);
+			throw ex;
 		}
 	}
 }
