@@ -54,8 +54,10 @@ public class LedgerConsensus
 		{
 			return ledgerOne;
 		}
+
 		if (ledgerOne.equals(ledgerTwo))
 		{
+			// Ledgers are same, any one will do
 			return ledgerOne;
 		}
 
@@ -67,12 +69,6 @@ public class LedgerConsensus
 		{
 			if (ledgerOne.getTieBreaker() == ledgerTwo.getTieBreaker())
 			{
-				if (Arrays.equals(ledgerOne.getHash(), ledgerTwo.getHash()))
-				{
-					// Ledgers are same, any one will do
-					return ledgerOne;
-				}
-
 				RuntimeException fatalException = new RuntimeException("Unrecoverable error: ledgers are both as-good and have same tie breaker but are not same (hashes do not match), cannot pick");
 				throw fatalException;
 			}

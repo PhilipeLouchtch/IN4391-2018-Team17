@@ -258,6 +258,22 @@ public class Ledger
 	}
 
 	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || getClass() != o.getClass())
+		{
+			return false;
+		}
+
+		Ledger otherLedger = (Ledger) o;
+		return Arrays.equals(this.getHash(), otherLedger.getHash());
+	}
+
+	@Override
 	public String toString()
 	{
 		return "Ledger{" +
