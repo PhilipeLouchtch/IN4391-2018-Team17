@@ -1,7 +1,6 @@
 package nl.tudelft.distributed.team17.application;
 
 import com.rits.cloning.Cloner;
-import net.coolicer.lang.Lazy;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
 import org.apache.commons.codec.binary.Hex;
@@ -22,6 +21,7 @@ public class Ledger
 	private static final Random random = new Random();
 
 	boolean isClosed;
+	boolean isAccepted;
 
 	private Ledger previous;
 
@@ -52,6 +52,8 @@ public class Ledger
 		commands = new ArrayList<>();
 
 		hashLazy = null; // lazy
+
+		this.isAccepted = false;
 	}
 
 	public static Ledger genesis(WorldState worldState)
@@ -90,7 +92,7 @@ public class Ledger
 
 	public synchronized WorldState getLastAcceptedWorldState()
 	{
-		if (isClosed() || isGenesis())
+		if (isAccepted() || isGenesis())
 		{
 			return worldState;
 		}
@@ -151,13 +153,14 @@ public class Ledger
 	}
 
 	/**
-	 * Makes the given ledger the new head, in other words integrates the new ledger into our in memory chain
+	 * Makes this ledger the new head, in other words integrates the new ledger into our in memory chain
 	 * @param losingLedger The ledger that was "current" to the instance of the application but failed to win in the consensus round
 	 * @return The WorldState resulting from applying the commands contained in the ledger on the WordState of the 'previous' ledger
 	 */
 	public synchronized void replace(Ledger losingLedger)
 	{
 		this.previous = losingLedger.previous;
+		this.isAccepted = true;
 
 		// In first round a winning Ledger that came from a Dto is both a genesis and float, can only discern
 		// the generation we're in through looking at the losing ledger as it still has all references
@@ -223,6 +226,11 @@ public class Ledger
 	public boolean isClosed()
 	{
 		return isClosed;
+	}
+
+	public boolean isAccepted()
+	{
+		return isAccepted;
 	}
 
 	public boolean isGenesis()
