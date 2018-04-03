@@ -55,12 +55,17 @@ public class InterServerCommunication
 
 			for(String server : knownServers)
 			{
-				fns.add(() -> {
-					LOG.info("exchanging ledger [{}] with [{}]", ledger.getHashHex(), server);
-					exchangeLedgerWithServer(ourLedgerAsDto, server);
-					LOG.info("exchanged ledger [{}] with [{}]", ledger.getHashHex(), server);
-					return null;
-				});
+				// Optimization: do no exchange ledger if already have received from that server for the round,
+				// that machine is probably waiting at LedgerExchange for the winner already
+				if (ledgerExchangeRoundManager.isPresent(server, ledger.getGeneration()) == false)
+				{
+					fns.add(() -> {
+						LOG.info("exchanging ledger [{}] with [{}]", ledger.getHashHex(), server);
+						exchangeLedgerWithServer(ourLedgerAsDto, server);
+						LOG.info("exchanged ledger [{}] with [{}]", ledger.getHashHex(), server);
+						return null;
+					});
+				}
 			}
 
 			// Ignoring return value as the ledgers are put into the CurrentLedgerExchangeRound indirection layer

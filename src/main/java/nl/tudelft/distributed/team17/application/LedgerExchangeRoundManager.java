@@ -107,4 +107,18 @@ public class LedgerExchangeRoundManager
 			return exchangeRounds.computeIfAbsent(roundId, LedgerExchangeRound::createRound);
 		}
 	}
+
+	public boolean isPresent(String server, int generation)
+	{
+		synchronized (exchangeRounds)
+		{
+			if (exchangeRounds.containsKey(generation))
+			{
+				return true;
+			}
+		}
+
+		LedgerExchangeRound ledgerExchangeRound = exchangeRounds.get(generation);
+		return ledgerExchangeRound.hasLedgerFor(server);
+	}
 }

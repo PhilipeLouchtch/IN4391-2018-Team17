@@ -48,6 +48,11 @@ public class LedgerExchangeRound
 		receivedLedgers.put(sourceId, ledgerDto);
 	}
 
+	public synchronized boolean hasLedgerFor(String sourceId)
+	{
+		return receivedLedgers.containsKey(sourceId);
+	}
+
 	public synchronized void closeRound(Ledger winner) throws LedgerExchangeRoundIsClosedException
 	{
 		assertRoundIsActive();
