@@ -143,7 +143,7 @@ public class PlayerEndpoints
 		ledgerController.startRunning();
 
 		WorldState worldState = currentWorldState.getLastCheckpoint();
-		LOGGER.info(String.format("Sending worldstate (%s)", currentWorldState.getLastCheckpoint().getWorldStateClock()));
+		LOGGER.debug(String.format("Sending worldstate (%s)", currentWorldState.getLastCheckpoint().getWorldStateClock()));
 		return worldState;
 	}
 }

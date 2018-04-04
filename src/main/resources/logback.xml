@@ -14,7 +14,9 @@
             <pattern>%d{HH:mm:ss.SSS} %green([%thread]) %highlight(%level) %logger{25} - %msg%n</pattern>
         </layout>
     </appender>
-    <logger name="nl.tudelft.distributed.team17" level="TRACE"/>
+
+    <logger name="nl.tudelft.distributed.team17" level="INFO"/>
+
     <root level="OFF">
         <!--<appender-ref ref="LE" />-->
         <appender-ref ref="colorAppender" />
