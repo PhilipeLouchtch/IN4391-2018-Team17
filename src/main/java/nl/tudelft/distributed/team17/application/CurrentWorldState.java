@@ -3,6 +3,8 @@ package nl.tudelft.distributed.team17.application;
 import nl.tudelft.distributed.team17.model.WorldState;
 import nl.tudelft.distributed.team17.model.command.Command;
 import nl.tudelft.distributed.team17.service.WorldStateGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,8 @@ import java.util.Queue;
 @Component
 public class CurrentWorldState
 {
+	private final static Logger LOG = LoggerFactory.getLogger(CurrentWorldState.class);
+
 	private Ledger currentLedger;
 
 	private Queue<Command> priorityCommandsQueue;
@@ -43,17 +47,21 @@ public class CurrentWorldState
 			throw new IllegalStateException("Sanity check: Cannot switch to a new accepted ledger if it is not marked closed");
 		}
 
+		LOG.debug("Switching to newly accepted ledger");
 		// Switch from current ledger head (loser) to the winner head
 		doSwitchoverToAcceptedLedger(newlyAcceptedLedger);
 
+		LOG.debug("Executing queued priority commands on new ledger head");
 		// exec priority commands on the new head
 		applyPriorityCommands();
 	}
 
 	public synchronized void runInCriticalSection(CurrentWorldStateCriticalSection criticalSectionCode)
 	{
+		LOG.debug("Entered CurrentWorldState critical section");
 		Ledger agreedUponLedger = criticalSectionCode.runInCriticalSectionOfCurrentWorldState(currentLedger);
 		switchToNewAcceptedLedger(agreedUponLedger);
+		LOG.debug("Leaving CurrentWorldState critical section");
 	}
 
 	private void applyPriorityCommands()
