@@ -204,7 +204,8 @@ public class ClientBot implements Runnable
                 {
                     worldState = makeRequest(PlayerEndpoints.worldStatePlayerEndpoint, WorldState.class);
                     sleep(50);
-                } while (worldState == null || (currentWorldState != null && worldState.getWorldStateClock().equals(currentWorldState.getWorldStateClock())));
+                } while (worldState == null || (currentWorldState != null && worldState.getWorldStateClock() <= currentWorldState.getWorldStateClock()));
+                // only accept newer world states
             }
             catch (NullPointerException ex)
             {

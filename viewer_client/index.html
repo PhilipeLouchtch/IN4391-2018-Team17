@@ -23,6 +23,8 @@
 
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <script defer="defer">
+        let lastSeenWorldStateClock = 0;
+
         $(document).ready(function() {
             let grid = makeGrid();
             $(grid).appendTo('.holder');
@@ -39,7 +41,13 @@
 
         function handleWorldState(worldState, status, xhr)
         {
-            // clearGrid();
+            if (lastSeenWorldStateClock < worldState.worldStateClock) {
+                lastSeenWorldStateClock = worldState.worldStateClock;
+            }
+            else {
+                // clock is older or same, skip updating field
+                return;
+            }
 
             let fields = worldState.boards.fields;
             for (let x = 0; x < 25; x++)
@@ -47,15 +55,16 @@
                 for (let y = 0; y < 25; y++)
                 {
                     let field = fields[x][y];
-                    
+
                     if (field == null) {
-                        $(`#${x}-${y}`).removeClass("dragon player");
+                        // field is empty
+                        $(`#${x}-${y}`).removeClass("player dragon");
                     }
                     else if (field.unitType == "DRAGON") {
-                        $(`#${x}-${y}`).addClass("dragon");
+                        $(`#${x}-${y}`).removeClass().addClass("grid-element dragon");
                     }
                     else if (field.unitType == "PLAYER") {
-                        $(`#${x}-${y}`).addClass("player");
+                        $(`#${x}-${y}`).removeClass().addClass("grid-element player");
                     }
                 }
             }
