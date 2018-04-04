@@ -54,22 +54,30 @@ public class ClientBot implements Runnable
             }
         }
         // otherwise enter action loop
-        while(!clientUnit.isDead())
+        while(true)
         {
             sleep(1000);
-            if(!currentWorldState.anyDragonsLeft())
-            {
-                LOGGER.info(String.format("[%s, %s]: all dragons are dead, players win", clientId, currentWorldState.getWorldStateClock()));
-                return;
-            }
-            performAction();
+
             if(!updateWorldState())
             {
                 LOGGER.info(String.format("[%s, %s]: worldState did not contain player unit, should not happen", clientId, currentWorldState.getWorldStateClock()));
                 throw new RuntimeException("Worldstate did not contain player unit. should not happen");
             }
+
+            if(!currentWorldState.anyDragonsLeft())
+            {
+                LOGGER.info(String.format("[%s, %s]: all dragons are dead, players win", clientId, currentWorldState.getWorldStateClock()));
+                return;
+            }
+
+            if (clientUnit.isDead())
+            {
+                LOGGER.info(String.format("[%s, %s]: player died", clientId, currentWorldState.getWorldStateClock()));
+                return;
+            }
+
+            performAction();
         }
-        LOGGER.info(String.format("[%s, %s]: player died", clientId, currentWorldState.getWorldStateClock()));
     }
 
     private void sleep(int miliseconds)
@@ -192,7 +200,15 @@ public class ClientBot implements Runnable
 
             try
             {
-                worldState = makeRequest(PlayerEndpoints.worldStatePlayerEndpoint, WorldState.class);
+                do
+                {
+                    worldState = makeRequest(PlayerEndpoints.worldStatePlayerEndpoint, WorldState.class);
+                    sleep(50);
+                } while (worldState == null || (currentWorldState != null && worldState.getWorldStateClock().equals(currentWorldState.getWorldStateClock())));
+            }
+            catch (NullPointerException ex)
+            {
+                throw ex;
             }
             catch(ResourceAccessException reaEx)
             {
