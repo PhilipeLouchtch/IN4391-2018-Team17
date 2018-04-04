@@ -112,4 +112,15 @@ public class ServerEndpoints
 
 		currentWorldState.addCommand(command);
 	}
+
+	// Get method makes it easy to call the endpoint from any browser
+	@GetMapping(path = "kill")
+	public void killServer()
+	{
+		LOG.error("THIS SERVER IS BEING MANUALLY KILLED");
+
+		Runtime.getRuntime().exit(0);
+
+		// Rest in Bytes
+	}
 }

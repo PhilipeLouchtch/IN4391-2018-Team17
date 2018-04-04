@@ -1,0 +1,84 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GameWorld viewer</title>
+
+    <style>
+        .grid-element {
+            width: 25px;
+            height: 25px;
+            border: 2px solid black;
+        }
+
+        .player {
+            background-color: green;
+        }
+
+        .dragon {
+            background-color: red; 
+        }
+    </style>
+
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script defer="defer">
+        let lastSeenWorldStateClock = 0;
+        let timeBetweenGets = 200;
+        let lastTimestamp = new Date().getTime();
+
+        $(document).ready(function() {
+
+            setInterval(getWorldStateAndDraw, 100);
+        });
+        
+        function getWorldStateAndDraw()
+        {
+            $.getJSON({url: "http://localhost/world"})
+                .done(bla => handleWorldState(bla))
+                .fail(bla => console.error('error'));
+        }
+
+        function handleWorldState(worldState, status, xhr)
+        {
+            if (lastSeenWorldStateClock < worldState.worldStateClock) {
+                lastSeenWorldStateClock = worldState.worldStateClock;
+
+                // if (timeBetweenGets == undefined) {
+                //     timeBetweenGets = (timeBetweenGets + (new Date().getTime() - lastTimestamp) * 0.01) / 1.01;
+                //     timeBetweenGets = new Date().getTime();
+                // }
+                // else if (timeBetweenGets > 1522873466604){
+                //     // first real run (the number above is hacky)
+                //     timeBetweenGets = new Date().getTime() - timeBetweenGets;
+                // }
+                // else {
+                    // give new value a weight of 1/100th, a lazy man's avg
+                    let currentTimestamp = new Date().getTime();
+                    timeBetweenGets = (timeBetweenGets + (currentTimestamp - lastTimestamp) * 0.01) / 1.01;
+                    lastTimestamp = currentTimestamp;
+                    
+                    document.getElementById("latency").textContent = timeBetweenGets + " ms";
+                // }
+            }
+            else {
+                // clock is older or same, skip updating field
+                return;
+            }
+
+            
+            console.log(`world-state ${worldState.worldStateClock} drawn`);
+        }
+
+        function clearGrid()
+        {
+            $(".grid-element").removeClass("player dragon");
+        }
+    </script>
+</head>
+<body>
+    <div class="holder">
+        <p id="latency"></p>
+    </div>
+</body>
+</html>
