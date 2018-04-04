@@ -2,6 +2,7 @@ package nl.tudelft.distributed.team17.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.rits.cloning.Cloner;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,13 @@ public class WorldState
 	@JsonCreator
 	private WorldState()
 	{
+	}
+
+	public WorldState deepClone()
+	{
+		Cloner cloner = new Cloner();
+		WorldState copiedWorldState = cloner.deepClone(this);
+		return copiedWorldState;
 	}
 
 	public synchronized boolean isUnitDead(String unitId)

@@ -107,8 +107,7 @@ public class Ledger
 		final int generation = this.generation + 1;
 
 		// Clone WorldState, so we always have an old, not changed copy
-		Cloner cloner = new Cloner();
-		WorldState copiedWorldState = cloner.deepClone(this.worldState);
+		WorldState copiedWorldState = this.worldState.deepClone();
 		copiedWorldState.incrementClock(); // we're switching ledgers so the world increases its clock
 
 		this.setClosed();
@@ -169,8 +168,12 @@ public class Ledger
 			throw new RuntimeException("Fatal error: cannot replace a genesis ledger");
 		}
 
-		WorldState startingWorldState = this.previous.worldState;
+		WorldState startingWorldState = losingLedger.previous.worldState;
 		this.worldState = startingWorldState;
+
+		// We're reusing the worldstate of the previous closed ledger, so have to increment clock here
+		// so indicate that the worldState now is "newer" due to it being included in the new Ledger
+		this.worldState.incrementClock();
 
 		try
 		{
@@ -186,6 +189,8 @@ public class Ledger
 		}
 
 		// no longer need to keep this in memory, removing reference for GC
+		// but be careful: "this" ledger is reusing the worldState!
+		// So the worldState will actually only have 0 refs after the next "Ledger#replace" action
 		this.previous.worldState = null;
 	}
 
