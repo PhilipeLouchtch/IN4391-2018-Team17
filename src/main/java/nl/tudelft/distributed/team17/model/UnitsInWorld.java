@@ -79,23 +79,22 @@ public class UnitsInWorld
 
         Predicate<Unit> filterCondition = (value) ->
         {
-           boolean isAlive = value.isAlive();
-           boolean isPlayer = value.getUnitType() == UnitType.PLAYER;
-           boolean isInRange = value.getLocation().distanceTo(unitLocation) <= range;
-           boolean isNotSameUnit = value != unit;
+            boolean isPlayer = value.getUnitType() == UnitType.PLAYER;
+            boolean isInRange = value.getLocation().distanceTo(unitLocation) <= range;
+            boolean isNotSameUnit = value != unit;
 
-           return isAlive && isPlayer && isInRange && isNotSameUnit;
+            return isPlayer && isInRange && isNotSameUnit;
         };
 
-        return units.values().stream()
+        return aliveUnits()
                 .filter(filterCondition)
                 .collect(Collectors.toList());
     }
 
     public boolean anyDragonLeft()
     {
-        return units.values().stream()
-                .anyMatch(t -> t.getUnitType() == UnitType.DRAGON && t.isAlive());
+        return aliveUnits()
+                .anyMatch(t -> t.getUnitType() == UnitType.DRAGON);
     }
 
     public Optional<Unit> closestDragonTo(Unit unit)
@@ -103,10 +102,17 @@ public class UnitsInWorld
         Location unitLocation = unit.getLocation();
         LocationDistanceComparator comparator = new LocationDistanceComparator(unitLocation);
 
-        return units.values().stream()
-                .filter(t -> t.isAlive() && t.getUnitType() == UnitType.DRAGON)
+        return aliveUnits()
+                .filter(t -> t.getUnitType() == UnitType.DRAGON)
                 .min(comparator);
     }
+
+
+    private Stream<Unit> aliveUnits()
+    {
+        return units.values().stream().filter(Unit::isAlive);
+    }
+
 
     private static void assertValidRange(int range)
     {
